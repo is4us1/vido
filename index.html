@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EVENTON · STUDIO — וידאו מקומי: עריכה + יצירה</title>
+<script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/umd/ffmpeg.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@ffmpeg/util@0.12.1/dist/umd/index.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#08080a; --panel:#131318; --panel2:#1b1b22; --line:#2a2a33;
+    --ink:#ece9e4; --muted:#8a8a96; --faint:#5a5a64;
+    --gold:#f0a829; --gold-soft:#ffce7a; --molten:#ff5d1a; --signal:#3ddc84; --rad:14px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    background:
+      radial-gradient(900px 500px at 88% -8%, rgba(255,93,26,.10), transparent 60%),
+      radial-gradient(700px 460px at 0% 110%, rgba(240,168,41,.08), transparent 60%),
+      var(--bg);
+    color:var(--ink); font-family:"Heebo",system-ui,sans-serif; -webkit-font-smoothing:antialiased; line-height:1.5;
+  }
+  .mono{font-family:"JetBrains Mono",monospace}
+  .wrap{max-width:1240px;margin:0 auto;padding:26px 22px 70px}
+  header{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:18px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:13px}
+  .logo{width:42px;height:42px;flex:0 0 42px}
+  .brand h1{font-size:21px;font-weight:900;letter-spacing:-.3px;margin:0;line-height:1}
+  .brand .sub{font-size:11.5px;color:var(--muted);letter-spacing:2px;text-transform:uppercase}
+  .engine{display:flex;align-items:center;gap:9px;font-size:12px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:7px 13px;background:var(--panel)}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--faint);transition:.3s}
+  .dot.on{background:var(--signal);box-shadow:0 0 12px var(--signal)}
+  .dot.busy{background:var(--molten);box-shadow:0 0 12px var(--molten);animation:pulse 1s infinite}
+  .dot.err{background:#ff4040;box-shadow:0 0 12px #ff4040}
+  @keyframes pulse{50%{opacity:.35}}
+
+  /* top tabs */
+  .tabs{display:flex;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:5px;margin-bottom:20px;width:max-content}
+  .tab{padding:9px 20px;border-radius:8px;cursor:pointer;font-weight:700;font-size:14px;color:var(--muted);display:flex;align-items:center;gap:8px;transition:.15s}
+  .tab svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
+  .tab.on{background:linear-gradient(180deg,var(--gold),#d98e15);color:#1a1206}
+
+  .grid{display:grid;grid-template-columns:1.35fr .95fr;gap:18px}
+  @media(max-width:920px){.grid{grid-template-columns:1fr}}
+  .card{background:linear-gradient(180deg,var(--panel),#0f0f13);border:1px solid var(--line);border-radius:var(--rad);padding:18px}
+  .card h2{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin:0 0 14px;font-weight:700;display:flex;align-items:center;gap:8px}
+
+  .drop{border:1.5px dashed var(--line);border-radius:12px;min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;color:var(--muted);cursor:pointer;transition:.18s;padding:22px}
+  .drop:hover,.drop.hot{border-color:var(--gold);background:rgba(240,168,41,.05);color:var(--gold-soft)}
+  .drop strong{color:var(--ink);font-size:16px}
+  .drop.small{min-height:120px}
+  video,audio{width:100%;border-radius:10px;background:#000;display:block}
+  video{max-height:420px}
+  .filemeta{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;font-size:12px;color:var(--muted)}
+  .filemeta b{color:var(--gold-soft);font-weight:700}
+
+  .tools{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:9px;margin-top:16px}
+  .tool{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 9px;cursor:pointer;text-align:center;font-size:12.5px;font-weight:500;color:var(--ink);transition:.15s;display:flex;flex-direction:column;align-items:center;gap:7px}
+  .tool:hover{border-color:var(--gold);transform:translateY(-1px)}
+  .tool svg{width:20px;height:20px;stroke:var(--gold);fill:none;stroke-width:1.7}
+
+  textarea,input[type=text],input[type=url],select{width:100%;background:#0c0c10;border:1px solid var(--line);border-radius:10px;color:var(--ink);font-family:inherit;font-size:14px;padding:11px;resize:vertical}
+  textarea{min-height:74px}
+  textarea:focus,input:focus,select:focus{outline:none;border-color:var(--gold)}
+  label.fld{display:block;font-size:12px;color:var(--muted);margin:13px 0 5px}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .btn{border:none;border-radius:10px;font-family:inherit;font-weight:700;cursor:pointer;padding:12px 16px;font-size:13.5px;transition:.15s;display:inline-flex;align-items:center;gap:7px;justify-content:center}
+  .btn-gold{background:linear-gradient(180deg,var(--gold),#d98e15);color:#1a1206}
+  .btn-gold:hover{filter:brightness(1.08)}
+  .btn-ghost{background:var(--panel2);border:1px solid var(--line);color:var(--ink)}
+  .btn-ghost:hover{border-color:var(--gold)}
+  .btn:disabled{opacity:.4;cursor:not-allowed;filter:none}
+  .chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:11px}
+  .chip{font-size:11.5px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:5px 11px;cursor:pointer;background:var(--panel);transition:.15s}
+  .chip:hover{border-color:var(--gold);color:var(--gold-soft)}
+
+  .rail{margin-top:6px}
+  .rail-empty{color:var(--faint);font-size:13px;text-align:center;padding:22px 0;border:1px dashed var(--line);border-radius:10px}
+  .op{position:relative;background:linear-gradient(90deg,var(--panel2),#16161c);border:1px solid var(--line);border-right:3px solid var(--gold);border-radius:9px;padding:11px 13px;margin-bottom:9px;display:flex;align-items:center;gap:11px}
+  .op::before{content:"";position:absolute;right:-3px;top:-9px;height:9px;width:3px;background:var(--line)}
+  .op:first-child::before{display:none}
+  .op .ord{font-family:"JetBrains Mono";font-size:11px;color:var(--molten);font-weight:700;min-width:18px}
+  .op .lbl{flex:1;font-size:13px}
+  .op .lbl small{display:block;color:var(--muted);font-size:11px}
+  .op .x{color:var(--faint);cursor:pointer;font-size:18px;line-height:1;padding:0 4px}
+  .op .x:hover{color:var(--molten)}
+  .op.done{border-right-color:var(--signal);opacity:.7}
+  .op.active{border-right-color:var(--molten);box-shadow:0 0 0 1px var(--molten) inset}
+
+  .run-row{display:flex;gap:9px;margin-top:14px}
+  .run-row .btn{flex:1}
+  .prog{height:6px;background:#0c0c10;border-radius:999px;overflow:hidden;margin-top:14px;border:1px solid var(--line)}
+  .prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--molten));transition:width .3s}
+  .log{margin-top:12px;background:#0a0a0d;border:1px solid var(--line);border-radius:10px;font-family:"JetBrains Mono";font-size:11px;color:var(--muted);padding:10px 12px;max-height:120px;overflow:auto;white-space:pre-wrap;line-height:1.6;direction:ltr;text-align:left}
+  .log .ok{color:var(--signal)} .log .warn{color:var(--gold)} .log .err{color:#ff6b6b}
+  .result{margin-top:14px;display:none}
+  .result.show{display:block}
+
+  /* create */
+  .subtabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+  .subtab{padding:9px 15px;border:1px solid var(--line);border-radius:10px;cursor:pointer;font-size:13px;font-weight:500;color:var(--muted);background:var(--panel2);display:flex;align-items:center;gap:8px;transition:.15s}
+  .subtab svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8}
+  .subtab.on{border-color:var(--gold);color:var(--gold-soft);background:rgba(240,168,41,.06)}
+  .thumbs{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  .thumbs img{width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
+  .thumbs .more{width:64px;height:64px;border-radius:8px;border:1px dashed var(--line);display:flex;align-items:center;justify-content:center;color:var(--faint);font-size:11px}
+
+  .settings{margin-top:16px;font-size:12px}
+  .settings summary{cursor:pointer;color:var(--muted);user-select:none}
+  .settings input{margin-top:8px;font-size:12.5px}
+  .hint{font-size:11.5px;color:var(--faint);margin-top:6px;line-height:1.6}
+  .hidden{display:none!important}
+  footer{margin-top:30px;text-align:center;color:var(--faint);font-size:11.5px}
+  canvas.work{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 44 44" fill="none">
+        <rect x="2" y="2" width="40" height="40" rx="9" stroke="#f0a829" stroke-width="2"/>
+        <path d="M14 15h10M14 22h16M14 29h7" stroke="#f0a829" stroke-width="2.4" stroke-linecap="round"/>
+        <path d="M31 24l6 4-6 4z" fill="#ff5d1a"/>
+      </svg>
+      <div><h1>EVENTON · STUDIO</h1><div class="sub">וידאו מקומי · עריכה + יצירה</div></div>
+    </div>
+    <div class="engine"><span class="dot" id="engDot"></span><span id="engTxt" class="mono">טוען מנוע…</span></div>
+  </header>
+
+  <div class="tabs">
+    <div class="tab on" data-view="edit"><svg viewBox="0 0 24 24"><path d="M3 7l5 5-5 5M21 7l-5 5 5 5"/></svg>עריכה</div>
+    <div class="tab" data-view="create"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>יצירה</div>
+  </div>
+
+  <!-- ============ EDIT VIEW ============ -->
+  <div id="editView">
+  <div class="grid">
+    <div>
+      <div class="card">
+        <h2><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f0a829" stroke-width="2"><path d="M3 7l5 5-5 5M21 7l-5 5 5 5"/></svg>הסטייג'</h2>
+        <div id="drop" class="drop">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 16V4m0 0L8 8m4-4l4 4"/><path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+          <div><strong>גרור לכאן קליפ</strong><br>או לחץ לבחירה · mp4 · mov · webm</div>
+        </div>
+        <video id="vid" class="hidden" controls></video>
+        <div class="filemeta hidden" id="meta"></div>
+        <div class="tools hidden" id="tools">
+          <div class="tool" data-tool="trim"><svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M8.5 7.5L20 18M8.5 16.5L20 6"/></svg>חיתוך</div>
+          <div class="tool" data-tool="vertical"><svg viewBox="0 0 24 24"><rect x="8" y="3" width="8" height="18" rx="1.5"/></svg>אנכי 9:16</div>
+          <div class="tool" data-tool="square"><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="1.5"/></svg>ריבוע 1:1</div>
+          <div class="tool" data-tool="speed"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg>מהירות</div>
+          <div class="tool" data-tool="compress"><svg viewBox="0 0 24 24"><path d="M4 9V5h4M20 9V5h-4M4 15v4h4M20 15v4h-4"/></svg>דחיסה</div>
+          <div class="tool" data-tool="mute"><svg viewBox="0 0 24 24"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M17 9l4 6M21 9l-4 6"/></svg>השתקה</div>
+          <div class="tool" data-tool="audio"><svg viewBox="0 0 24 24"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg>חלץ אודיו</div>
+          <div class="tool" data-tool="gif"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M8 9v6M16 9v6M12 9v6"/></svg>GIF</div>
+          <div class="tool" data-tool="reverse"><svg viewBox="0 0 24 24"><path d="M11 19l-7-7 7-7M20 19l-7-7 7-7"/></svg>הפוך</div>
+          <div class="tool" data-tool="fade"><svg viewBox="0 0 24 24"><path d="M3 12h18"/></svg>פייד</div>
+          <div class="tool" data-tool="text"><svg viewBox="0 0 24 24"><path d="M4 7V5h16v2M9 19h6M12 5v14"/></svg>כיתוב</div>
+          <div class="tool" data-tool="resize"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>רזולוציה</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <h2><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f0a829" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>הסוכן</h2>
+        <textarea id="agentIn" placeholder="כתוב בעברית מה לעשות. למשל:&#10;תחתוך 4 שניות, האץ פי 1.5, תהפוך לאנכי ותדחוס לרילס"></textarea>
+        <button class="btn btn-gold" id="planBtn" style="width:100%;margin-top:6px" disabled>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1a1206" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>תרגם לתוכנית עריכה</button>
+        <div class="chips" id="chips">
+          <span class="chip" data-q="תהפוך לאנכי 9:16 ותדחוס לרילס">רילס אנכי</span>
+          <span class="chip" data-q="תחתוך את 3 השניות הראשונות והאחרונות">קיצוץ קצוות</span>
+          <span class="chip" data-q="תהפוך ל-GIF ב-12 פריימים לשנייה">GIF</span>
+          <span class="chip" data-q="האץ פי 2 והשתק את הסאונד">טיים-לאפס</span>
+        </div>
+      </div>
+      <div class="card" style="margin-top:18px">
+        <h2><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f0a829" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>קו הייצור</h2>
+        <div class="rail" id="rail"><div class="rail-empty">אין פעולות עדיין — בחר כלי או הפעל את הסוכן</div></div>
+        <div class="run-row">
+          <button class="btn btn-gold" id="runBtn" disabled><svg width="15" height="15" viewBox="0 0 24 24" fill="#1a1206"><path d="M7 4l13 8-13 8z"/></svg>הרץ</button>
+          <button class="btn btn-ghost" id="clearBtn" disabled>נקה</button>
+        </div>
+        <div class="prog"><i id="progBar"></i></div>
+        <div class="log" id="log">&gt; ממתין…</div>
+        <div class="result" id="result">
+          <video id="outVid" controls style="margin-bottom:10px"></video>
+          <a id="dl" class="btn btn-gold" style="width:100%" download><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1a1206" stroke-width="2.2"><path d="M12 4v12m0 0l-4-4m4 4l4-4M5 20h14"/></svg>הורד תוצאה</a>
+        </div>
+        <details class="settings"><summary>הגדרות סוכן</summary>
+          <input type="url" id="endpoint" placeholder="כתובת AI מותאמת (Cloudflare Worker) — ריק = ברירת מחדל">
+          <div class="hint">בתוך claude.ai עובד אוטומטית. בהארחה עצמית — הדבק כאן Worker שמתווך ל-Anthropic API.</div>
+        </details>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <!-- ============ CREATE VIEW ============ -->
+  <div id="createView" class="hidden">
+  <div class="grid">
+    <div>
+      <div class="card">
+        <h2><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f0a829" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>מחולל</h2>
+        <div class="subtabs">
+          <div class="subtab on" data-gen="audio"><svg viewBox="0 0 24 24"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg>אודיו → וידאו</div>
+          <div class="subtab" data-gen="slides"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 15l5-5 4 4 3-3 6 6"/></svg>תמונות → סליידשואו</div>
+        </div>
+
+        <!-- audio gen -->
+        <div id="genAudio">
+          <p class="hint" style="margin-top:0">הופך הקלטה (חזנות, שיר, נאום) לוידאו עם תמונת רקע, כותרת בעברית וויזואלייזר גלי קול — מוכן ליוטיוב ולאינסטגרם.</p>
+          <label class="fld">קובץ אודיו (חובה)</label>
+          <div id="audDrop" class="drop small"><span>גרור / לחץ · mp3 · m4a · wav</span></div>
+          <audio id="audPrev" class="hidden" controls style="margin-top:10px"></audio>
+          <label class="fld">תמונת רקע (אופציונלי — אחרת רקע מותג)</label>
+          <div id="coverDrop" class="drop small"><span>גרור / לחץ · jpg · png</span></div>
+          <label class="fld">כותרת על הוידאו</label>
+          <input type="text" id="audTitle" placeholder="לדוגמה: ישראל שוורץ · אבינו מלכנו">
+          <div class="row2">
+            <div><label class="fld">סגנון גל</label>
+              <select id="waveMode"><option value="cline">קו מלא</option><option value="line">קו דק</option><option value="p2p">נקודות</option></select></div>
+            <div><label class="fld">צבע גל</label>
+              <select id="waveColor"><option value="0xffce7a">זהב</option><option value="0xff5d1a">כתום לוהט</option><option value="0x3ddc84">ירוק</option><option value="0xffffff">לבן</option></select></div>
+          </div>
+          <button class="btn btn-gold" id="makeAudio" style="width:100%;margin-top:16px" disabled>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="#1a1206"><path d="M7 4l13 8-13 8z"/></svg>צור וידאו</button>
+        </div>
+
+        <!-- slides gen -->
+        <div id="genSlides" class="hidden">
+          <p class="hint" style="margin-top:0">תמונות (פרויקטים, לפני/אחרי, ציטוטים) + מוזיקה → סרטון רציף. מומלץ אותו יחס לכל התמונות.</p>
+          <label class="fld">תמונות (אפשר לבחור כמה ביחד)</label>
+          <div id="imgsDrop" class="drop small"><span>גרור / לחץ · בחר מספר תמונות</span></div>
+          <div class="thumbs" id="thumbs"></div>
+          <div class="row2">
+            <div><label class="fld">שניות לכל תמונה</label><input type="text" id="slideSec" value="3"></div>
+            <div><label class="fld">יחס</label>
+              <select id="slideAspect"><option value="1280:720">רוחבי 16:9</option><option value="720:1280">אנכי 9:16</option><option value="1080:1080">ריבוע 1:1</option></select></div>
+          </div>
+          <label class="fld">מוזיקת רקע (אופציונלי)</label>
+          <div id="musDrop" class="drop small"><span>גרור / לחץ · mp3</span></div>
+          <button class="btn btn-gold" id="makeSlides" style="width:100%;margin-top:16px" disabled>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="#1a1206"><path d="M7 4l13 8-13 8z"/></svg>צור סליידשואו</button>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <h2><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f0a829" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>פלט</h2>
+        <div class="prog"><i id="cProgBar"></i></div>
+        <div class="log" id="cLog">&gt; בחר חומרים והקש "צור"…</div>
+        <div class="result" id="cResult">
+          <video id="cOutVid" controls style="margin-bottom:10px"></video>
+          <a id="cDl" class="btn btn-gold" style="width:100%" download><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1a1206" stroke-width="2.2"><path d="M12 4v12m0 0l-4-4m4 4l4-4M5 20h14"/></svg>הורד וידאו</a>
+        </div>
+        <div class="hint" style="margin-top:14px">טיפ: קבצים ארוכים (5 דק'+) ייקח זמן לעבד — הכל קורה מקומית במעבד שלך. לרילסים קצרים זה כמעט מיידי.</div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <canvas class="work" id="work"></canvas>
+  <footer>EVENTON · STUDIO — הכל רץ מקומית בדפדפן שלך. הקבצים לא עוזבים את המכשיר.</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  const $ = s => document.querySelector(s);
+  const setEngine=(st,txt)=>{$("#engDot").className="dot "+st;$("#engTxt").textContent=txt;};
+  function logTo(sel,m,c){const l=$(sel);l.innerHTML+="\n> "+(c?`<span class="${c}">${m}</span>`:m);l.scrollTop=l.scrollHeight;}
+  const log=(m,c)=>logTo("#log",m,c);
+  const clog=(m,c)=>logTo("#cLog",m,c);
+
+  let ffmpeg=null, ready=false, busy=false;
+  let PROG=$("#progBar");
+  const FU=()=>window.FFmpegUtil;
+
+  // ---------- boot ----------
+  async function boot(){
+    try{
+      if(!window.FFmpegWASM||!window.FFmpegUtil) throw new Error("CDN");
+      const {FFmpeg}=FFmpegWASM, {toBlobURL}=FFmpegUtil;
+      ffmpeg=new FFmpeg();
+      ffmpeg.on("log",({message})=>{ if(message&&!/^frame=/.test(message)) console.log(message); });
+      ffmpeg.on("progress",({progress})=>{ if(busy&&PROG){const p=Math.min(99,Math.max(0,Math.round(progress*100)));PROG.style.width=p+"%";} });
+      const base="https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd";
+      await ffmpeg.load({coreURL:await toBlobURL(base+"/ffmpeg-core.js","text/javascript"),wasmURL:await toBlobURL(base+"/ffmpeg-core.wasm","application/wasm")});
+      ready=true; setEngine("on","מנוע מוכן"); log("ffmpeg.wasm loaded","ok"); clog("מנוע מוכן","ok"); refresh(); refreshCreate();
+    }catch(e){
+      setEngine("err","מנוע לא נטען");
+      log("engine failed — CSP/network blocking CDN","err"); log("ארח ב-GitHub Pages או הרץ דרך שרת מקומי","warn");
+      clog("מנוע לא נטען — ארח את הקובץ אצלך","err");
+    }
+  }
+
+  // ===== view switching =====
+  document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("on"));t.classList.add("on");
+    const v=t.dataset.view;$("#editView").classList.toggle("hidden",v!=="edit");$("#createView").classList.toggle("hidden",v!=="create");
+  });
+  document.querySelectorAll(".subtab").forEach(s=>s.onclick=()=>{
+    document.querySelectorAll(".subtab").forEach(x=>x.classList.remove("on"));s.classList.add("on");
+    const g=s.dataset.gen;$("#genAudio").classList.toggle("hidden",g!=="audio");$("#genSlides").classList.toggle("hidden",g!=="slides");
+  });
+
+  /* ========================================================= EDIT ========================================================= */
+  let srcFile=null,srcName="input.mp4",duration=0,hasAudio=true,ops=[],opCounter=0,fontLoaded=false;
+  const drop=$("#drop"),vid=$("#vid");
+  function bindDrop(el,cb,accept){
+    el.addEventListener("click",()=>{const i=document.createElement("input");i.type="file";i.accept=accept;i.multiple=el.dataset.multi==="1";i.onchange=e=>cb(el.dataset.multi==="1"?e.target.files:e.target.files[0]);i.click();});
+    ["dragover","dragenter"].forEach(ev=>el.addEventListener(ev,e=>{e.preventDefault();el.classList.add("hot");}));
+    ["dragleave","drop"].forEach(ev=>el.addEventListener(ev,e=>{e.preventDefault();el.classList.remove("hot");}));
+    el.addEventListener("drop",e=>{const f=e.dataTransfer.files;if(f.length)cb(el.dataset.multi==="1"?f:f[0]);});
+  }
+  bindDrop(drop,loadFile,"video/*");
+  function loadFile(f){
+    if(!f||!f.type.startsWith("video")){log("קובץ לא נתמך","err");return;}
+    srcFile=f;srcName=("input."+(f.name.split(".").pop()||"mp4")).replace(/[^a-z0-9.]/gi,"");
+    vid.src=URL.createObjectURL(f);vid.classList.remove("hidden");drop.classList.add("hidden");
+    vid.onloadedmetadata=()=>{duration=vid.duration||0;hasAudio=true;
+      $("#meta").classList.remove("hidden");
+      $("#meta").innerHTML=`<span>שם: <b>${f.name}</b></span><span>אורך: <b>${duration.toFixed(1)} ש'</b></span><span>גודל: <b>${(f.size/1048576).toFixed(1)} MB</b></span>`;
+      $("#tools").classList.remove("hidden");refresh();log("clip loaded · "+duration.toFixed(1)+"s","ok");};
+  }
+  function addOp(o){ops.push(o);renderRail();refresh();}
+  function renderRail(){const r=$("#rail");
+    if(!ops.length){r.innerHTML='<div class="rail-empty">אין פעולות עדיין — בחר כלי או הפעל את הסוכן</div>';return;}
+    r.innerHTML=ops.map((o,i)=>`<div class="op" data-i="${i}"><span class="ord">${String(i+1).padStart(2,"0")}</span><span class="lbl">${o.title}<small>${o.desc||""}</small></span><span class="x" data-rm="${i}">×</span></div>`).join("");
+    r.querySelectorAll("[data-rm]").forEach(x=>x.onclick=()=>{ops.splice(+x.dataset.rm,1);renderRail();refresh();});}
+  function refresh(){const has=ops.length>0;
+    $("#runBtn").disabled=!(ready&&srcFile&&has&&!busy);$("#clearBtn").disabled=!(has&&!busy);$("#planBtn").disabled=!(srcFile&&!busy);}
+  $("#clearBtn").onclick=()=>{ops=[];renderRail();refresh();$("#result").classList.remove("show");};
+
+  const ax=()=>hasAudio?["-c:a","aac","-b:a","160k"]:["-an"];
+  const atempo=f=>{let c=[],r=f;while(r>2){c.push("atempo=2.0");r/=2;}while(r<0.5){c.push("atempo=0.5");r*=2;}c.push("atempo="+r.toFixed(3));return c.join(",");};
+  function buildTrim(s,e){return{title:"חיתוך",desc:`${s}s → ${e}s`,run:(i,o)=>{duration=Math.max(0,e-s);return["-ss",String(s),"-to",String(e),"-i",i,"-c:v","libx264","-preset","veryfast",...ax(),o("mp4")];}};}
+  function buildAspect(r,size,title){const[rw,rh]=r.split(":").map(Number);const[w,h]=size.split(":");return{title,desc:"חיתוך + סקייל",run:(i,o)=>["-i",i,"-vf",`crop='min(iw,ih*${rw}/${rh})':'min(ih,iw*${rh}/${rw})',scale=${w}:${h}`,"-c:v","libx264","-preset","veryfast",...ax(),o("mp4")]};}
+  function buildSpeed(f){return{title:"מהירות",desc:`×${f}`,run:(i,o)=>{duration/=f;const a=hasAudio?["-af",atempo(f)]:[];return["-i",i,"-vf",`setpts=${(1/f).toFixed(4)}*PTS`,...a,"-c:v","libx264","-preset","veryfast",...(hasAudio?["-c:a","aac"]:["-an"]),o("mp4")];}};}
+  function buildCompress(c){return{title:"דחיסה",desc:`crf ${c}`,run:(i,o)=>["-i",i,"-c:v","libx264","-crf",String(c),"-preset","veryfast",...ax(),o("mp4")]};}
+  function buildMute(){return{title:"השתקה",desc:"ללא סאונד",run:(i,o)=>{hasAudio=false;return["-i",i,"-c:v","copy","-an",o("mp4")];}};}
+  function buildAudio(){return{title:"חילוץ אודיו",desc:"mp3",terminal:true,run:(i,o)=>["-i",i,"-vn","-c:a","libmp3lame","-q:a","2",o("mp3")]};}
+  function buildGif(fps,w){return{title:"GIF",desc:`${fps}fps`,terminal:true,run:(i,o)=>["-i",i,"-vf",`fps=${fps},scale=${w}:-1:flags=lanczos`,"-loop","0",o("gif")]};}
+  function buildReverse(){return{title:"היפוך",desc:"reverse",run:(i,o)=>["-i",i,"-vf","reverse",...(hasAudio?["-af","areverse","-c:a","aac"]:["-an"]),"-c:v","libx264","-preset","veryfast",o("mp4")]};}
+  function buildFade(d){return{title:"פייד",desc:`${d}s`,run:(i,o)=>{const out=Math.max(0,(duration||1)-d);return["-i",i,"-vf",`fade=t=in:st=0:d=${d},fade=t=out:st=${out.toFixed(2)}:d=${d}`,"-c:v","libx264","-preset","veryfast",...ax(),o("mp4")];}};}
+  function buildResize(h){return{title:"רזולוציה",desc:`${h}p`,run:(i,o)=>["-i",i,"-vf",`scale=-2:${h}`,"-c:v","libx264","-preset","veryfast",...ax(),o("mp4")]};}
+  function buildText(t){const safe=t.replace(/\\/g,"").replace(/'/g,"").replace(/:/g,"\\:").replace(/%/g,"");return{title:"כיתוב",desc:t,needsFont:true,run:(i,o)=>["-i",i,"-vf",`drawtext=fontfile=/font.ttf:text='${safe}':x=(w-text_w)/2:y=h*0.82:fontsize=h*0.06:fontcolor=white:box=1:boxcolor=black@0.45:boxborderw=18`,"-c:v","libx264","-preset","veryfast",...ax(),o("mp4")]};}
+
+  $("#tools").addEventListener("click",e=>{const t=e.target.closest(".tool");if(!t)return;const k=t.dataset.tool;
+    if(k==="trim"){const s=+prompt("התחל בשנייה:",0),en=+prompt("סיים בשנייה:",duration.toFixed(1));if(isNaN(s)||isNaN(en))return;addOp(buildTrim(s,en));}
+    else if(k==="vertical")addOp(buildAspect("9:16","720:1280","אנכי 9:16"));
+    else if(k==="square")addOp(buildAspect("1:1","1080:1080","ריבוע 1:1"));
+    else if(k==="speed"){const f=+prompt("פקטור מהירות:",2);if(!f||f<=0)return;addOp(buildSpeed(f));}
+    else if(k==="compress"){const q=+prompt("איכות 18-32 (מומלץ 26):",26);if(isNaN(q))return;addOp(buildCompress(q));}
+    else if(k==="mute")addOp(buildMute());else if(k==="audio")addOp(buildAudio());
+    else if(k==="gif"){const fps=+prompt("פריימים לשנייה:",12)||12;addOp(buildGif(fps,480));}
+    else if(k==="reverse")addOp(buildReverse());
+    else if(k==="fade"){const d=+prompt("משך פייד (שניות):",0.8)||0.8;addOp(buildFade(d));}
+    else if(k==="text"){const t=prompt("טקסט כיתוב:","אבנטון");if(!t)return;addOp(buildText(t));}
+    else if(k==="resize"){const h=+prompt("גובה (720/1080):",720)||720;addOp(buildResize(h));}});
+
+  async function ensureFont(){if(fontLoaded)return true;const {fetchFile}=FU();
+    for(const u of["https://cdn.jsdelivr.net/gh/google/fonts@main/ofl/heebo/Heebo%5Bwght%5D.ttf","https://cdn.jsdelivr.net/npm/dejavu-fonts-ttf@2.37.3/ttf/DejaVuSans.ttf"]){
+      try{await ffmpeg.writeFile("/font.ttf",await fetchFile(u));fontLoaded=true;return true;}catch(e){}}
+    log("font load failed","warn");return false;}
+
+  // agent
+  $("#chips").addEventListener("click",e=>{if(e.target.dataset.q)$("#agentIn").value=e.target.dataset.q;});
+  const SYS=`אתה מתכנן עריכת וידאו. החזר אך ורק JSON תקין — מערך פעולות, בלי טקסט נוסף ובלי markdown. שמות מותרים: trim{start,end} aspect{ratio:"9:16"|"1:1"|"16:9"} speed{factor} compress{crf} mute{} audio{} gif{fps} reverse{} fade{seconds} text{content} resize{height}. סדר=ביצוע. דוגמה: [{"op":"trim","start":0,"end":15},{"op":"aspect","ratio":"9:16"}]`;
+  $("#planBtn").onclick=async()=>{const q=$("#agentIn").value.trim();if(!q)return;$("#planBtn").disabled=true;log("agent thinking…","warn");
+    try{const ep=$("#endpoint").value.trim()||"https://api.anthropic.com/v1/messages";
+      const res=await fetch(ep,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:1000,system:SYS,messages:[{role:"user",content:q}]})});
+      if(!res.ok)throw new Error("HTTP "+res.status);const data=await res.json();
+      let txt=(data.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("").trim().replace(/```json|```/g,"").trim();
+      const m=txt.match(/\[[\s\S]*\]/);if(m)txt=m[0];let n=0;
+      JSON.parse(txt).forEach(p=>{const b=fromPlan(p);if(b){addOp(b);n++;}});log(`agent → ${n} פעולות`,"ok");
+    }catch(e){log("agent error: "+e.message,"err");log("בהארחה עצמית מלא Worker בהגדרות","warn");}
+    $("#planBtn").disabled=false;refresh();};
+  function fromPlan(p){switch((p.op||"").toLowerCase()){
+    case"trim":return buildTrim(+p.start||0,+p.end||duration);
+    case"aspect":return p.ratio==="1:1"?buildAspect("1:1","1080:1080","ריבוע 1:1"):p.ratio==="16:9"?buildAspect("16:9","1280:720","רוחבי 16:9"):buildAspect("9:16","720:1280","אנכי 9:16");
+    case"speed":return buildSpeed(+p.factor||2);case"compress":return buildCompress(+p.crf||26);
+    case"mute":return buildMute();case"audio":return buildAudio();case"gif":return buildGif(+p.fps||12,480);
+    case"reverse":return buildReverse();case"fade":return buildFade(+p.seconds||0.8);
+    case"text":return buildText(p.content||"טקסט");case"resize":return buildResize(+p.height||720);default:return null;}}
+
+  $("#runBtn").onclick=async()=>{
+    if(busy||!ready||!ops.length)return;busy=true;PROG=$("#progBar");PROG.style.width="0%";
+    setEngine("busy","מעבד…");$("#result").classList.remove("show");refresh();
+    const {fetchFile}=FU();let cur="src_"+srcName,ext="mp4";
+    try{await ffmpeg.writeFile(cur,await fetchFile(srcFile));hasAudio=true;duration=vid.duration||0;opCounter=0;
+      const nodes=$("#rail").querySelectorAll(".op");
+      for(let i=0;i<ops.length;i++){const op=ops[i];nodes.forEach(n=>n.classList.remove("active"));if(nodes[i])nodes[i].classList.add("active");
+        log(`[${i+1}/${ops.length}] ${op.title}…`);if(op.needsFont)await ensureFont();
+        let out;const o=x=>{out="out_"+(opCounter++)+"."+x;ext=x;return out;};
+        await ffmpeg.exec(op.run(cur,o));cur=out;
+        if(nodes[i]){nodes[i].classList.remove("active");nodes[i].classList.add("done");}
+        if(op.terminal)break;}
+      const dat=await ffmpeg.readFile(cur);const mime=ext==="gif"?"image/gif":ext==="mp3"?"audio/mp3":"video/mp4";
+      const blob=new Blob([dat.buffer],{type:mime});const url=URL.createObjectURL(blob);PROG.style.width="100%";
+      const ov=$("#outVid");if(ext==="mp3"||ext==="gif")ov.classList.add("hidden");else{ov.classList.remove("hidden");ov.src=url;}
+      $("#dl").href=url;$("#dl").download="eventon-cut."+ext;$("#result").classList.add("show");
+      setEngine("on","הושלם");log("DONE · "+(blob.size/1048576).toFixed(2)+" MB","ok");
+    }catch(e){setEngine("err","שגיאה");log("run failed: "+(e.message||e),"err");}
+    busy=false;refresh();};
+
+  /* ========================================================= CREATE ========================================================= */
+  let audFile=null,coverFile=null,imgFiles=[],musFile=null;
+  const work=$("#work"),wx=work.getContext("2d");
+
+  bindDrop($("#audDrop"),f=>{audFile=f;$("#audPrev").src=URL.createObjectURL(f);$("#audPrev").classList.remove("hidden");$("#audDrop").querySelector("span").textContent="✓ "+f.name;refreshCreate();},"audio/*");
+  bindDrop($("#coverDrop"),f=>{coverFile=f;$("#coverDrop").querySelector("span").textContent="✓ "+f.name;},"image/*");
+  const imgsDrop=$("#imgsDrop");imgsDrop.dataset.multi="1";
+  bindDrop(imgsDrop,fl=>{imgFiles=Array.from(fl);renderThumbs();refreshCreate();},"image/*");
+  bindDrop($("#musDrop"),f=>{musFile=f;$("#musDrop").querySelector("span").textContent="✓ "+f.name;},"audio/*");
+
+  function renderThumbs(){const t=$("#thumbs");t.innerHTML="";imgFiles.slice(0,8).forEach(f=>{const i=document.createElement("img");i.src=URL.createObjectURL(f);t.appendChild(i);});
+    if(imgFiles.length>8){const d=document.createElement("div");d.className="more";d.textContent="+"+(imgFiles.length-8);t.appendChild(d);}}
+  function refreshCreate(){$("#makeAudio").disabled=!(ready&&audFile&&!busy);$("#makeSlides").disabled=!(ready&&imgFiles.length&&!busy);}
+
+  const loadImg=f=>new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=URL.createObjectURL(f);});
+  function coverDraw(ctx,img,W,H){const s=Math.max(W/img.width,H/img.height),w=img.width*s,h=img.height*s;ctx.drawImage(img,(W-w)/2,(H-h)/2,w,h);}
+  const canvasBytes=c=>new Promise(res=>c.toBlob(async b=>res(new Uint8Array(await b.arrayBuffer())),"image/png"));
+  async function readyFont(){try{await document.fonts.load("700 64px Heebo");await document.fonts.ready;}catch(e){}}
+
+  async function buildBg(W,H,title){
+    work.width=W;work.height=H;
+    if(coverFile){const img=await loadImg(coverFile);coverDraw(wx,img,W,H);
+      const g=wx.createLinearGradient(0,0,0,H);g.addColorStop(0,"rgba(0,0,0,.15)");g.addColorStop(.55,"rgba(0,0,0,0)");g.addColorStop(1,"rgba(8,8,10,.88)");wx.fillStyle=g;wx.fillRect(0,0,W,H);
+    }else{const g=wx.createLinearGradient(0,0,W,H);g.addColorStop(0,"#1d1d25");g.addColorStop(1,"#08080a");wx.fillStyle=g;wx.fillRect(0,0,W,H);
+      wx.strokeStyle="rgba(240,168,41,.5)";wx.lineWidth=3;wx.beginPath();wx.arc(W*0.5,H*0.42,90,0,Math.PI*2);wx.stroke();
+      wx.fillStyle="#ff5d1a";wx.beginPath();wx.moveTo(W*0.5-22,H*0.42-30);wx.lineTo(W*0.5+34,H*0.42);wx.lineTo(W*0.5-22,H*0.42+30);wx.closePath();wx.fill();}
+    if(title){await readyFont();wx.direction="rtl";wx.textAlign="center";wx.textBaseline="alphabetic";
+      wx.font="700 "+Math.round(H*0.075)+"px Heebo, sans-serif";wx.fillStyle="#fff";wx.shadowColor="rgba(0,0,0,.65)";wx.shadowBlur=18;wx.shadowOffsetY=2;
+      wx.fillText(title,W/2,H-Math.round(H*0.20));wx.shadowBlur=0;wx.shadowOffsetY=0;}
+    return await canvasBytes(work);
+  }
+
+  $("#makeAudio").onclick=async()=>{
+    if(busy||!ready||!audFile)return;busy=true;PROG=$("#cProgBar");PROG.style.width="0%";
+    setEngine("busy","יוצר…");$("#cResult").classList.remove("show");refreshCreate();
+    const {fetchFile}=FU();
+    try{
+      clog("בונה רקע…");const W=1280,H=720;
+      const bg=await buildBg(W,H,$("#audTitle").value.trim());
+      const aext=(audFile.name.split(".").pop()||"mp3").toLowerCase();const ain="aud."+aext;
+      await ffmpeg.writeFile("bg.png",bg);await ffmpeg.writeFile(ain,await fetchFile(audFile));
+      const mode=$("#waveMode").value,color=$("#waveColor").value;
+      clog("מרנדר ויזואלייזר (לפי אורך האודיו)…");
+      const fc=`[0:v]scale=${W}:${H},setsar=1[bg];[1:a]showwaves=s=${W}x200:mode=${mode}:colors=${color}[w];[bg][w]overlay=0:H-h-40[v]`;
+      await ffmpeg.exec(["-loop","1","-i","bg.png","-i",ain,"-filter_complex",fc,"-map","[v]","-map","1:a","-c:v","libx264","-pix_fmt","yuv420p","-preset","veryfast","-c:a","aac","-b:a","192k","-shortest","-r","25","aout.mp4"]);
+      finishCreate("aout.mp4","mp4");
+    }catch(e){setEngine("err","שגיאה");clog("נכשל: "+(e.message||e),"err");clog("אם זה filter — ייתכן ש-showwaves לא בבילד; דווח לי","warn");busy=false;refreshCreate();}
+  };
+
+  $("#makeSlides").onclick=async()=>{
+    if(busy||!ready||!imgFiles.length)return;busy=true;PROG=$("#cProgBar");PROG.style.width="0%";
+    setEngine("busy","יוצר…");$("#cResult").classList.remove("show");refreshCreate();
+    const {fetchFile}=FU();
+    try{
+      const [W,H]=$("#slideAspect").value.split(":").map(Number);
+      const sec=Math.max(0.5,+$("#slideSec").value||3);
+      clog(`מנרמל ${imgFiles.length} תמונות ל-${W}x${H}…`);
+      for(let i=0;i<imgFiles.length;i++){work.width=W;work.height=H;wx.fillStyle="#08080a";wx.fillRect(0,0,W,H);
+        const img=await loadImg(imgFiles[i]);coverDraw(wx,img,W,H);
+        const name="sld"+String(i).padStart(3,"0")+".png";await ffmpeg.writeFile(name,await canvasBytes(work));}
+      const args=["-framerate","1/"+sec,"-i","sld%03d.png"];
+      if(musFile){const mext=(musFile.name.split(".").pop()||"mp3").toLowerCase();await ffmpeg.writeFile("mus."+mext,await fetchFile(musFile));args.push("-i","mus."+mext);}
+      args.push("-vf","fps=25,format=yuv420p","-c:v","libx264","-pix_fmt","yuv420p","-preset","veryfast");
+      if(musFile)args.push("-c:a","aac","-b:a","192k","-shortest");
+      args.push("sout.mp4");
+      clog("מקודד וידאו…");await ffmpeg.exec(args);
+      finishCreate("sout.mp4","mp4");
+    }catch(e){setEngine("err","שגיאה");clog("נכשל: "+(e.message||e),"err");busy=false;refreshCreate();}
+  };
+
+  async function finishCreate(name,ext){
+    const dat=await ffmpeg.readFile(name);const blob=new Blob([dat.buffer],{type:"video/mp4"});const url=URL.createObjectURL(blob);
+    PROG.style.width="100%";$("#cOutVid").src=url;$("#cDl").href=url;$("#cDl").download="eventon-create."+ext;
+    $("#cResult").classList.add("show");setEngine("on","הושלם");clog("DONE · "+(blob.size/1048576).toFixed(2)+" MB","ok");
+    busy=false;refreshCreate();
+  }
+
+  boot();
+})();
+</script>
+</body>
+</html>
