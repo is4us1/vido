@@ -15,3 +15,10 @@
 בהארחה עצמית קריאה ישירה ל-Anthropic נחסמת (CORS + מפתח).
 פתח "הגדרות סוכן" באתר והדבק כתובת Cloudflare Worker שמתווך ל-API.
 **שאר הכלים — כל העריכה הידנית וכל היצירה — עובדים בלי זה.**
+
+## פריסה ל-Vercel (כולל סוכן עובד)
+1. vercel.com → Add New → Project → Import את `is4us1/vido`.
+2. Framework Preset: **Other** · בלי build command. Deploy.
+3. Project → Settings → Environment Variables → הוסף:
+   `ANTHROPIC_API_KEY` = המפתח שלך מ-console.anthropic.com → Save → Redeploy.
+4. הסוכן בעברית יעבוד אוטומטית דרך `/api/agent` (המפתח נשאר בצד השרת, לא נחשף).

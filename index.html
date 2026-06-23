@@ -194,7 +194,7 @@
         </div>
         <details class="settings"><summary>הגדרות סוכן</summary>
           <input type="url" id="endpoint" placeholder="כתובת AI מותאמת (Cloudflare Worker) — ריק = ברירת מחדל">
-          <div class="hint">בתוך claude.ai עובד אוטומטית. בהארחה עצמית — הדבק כאן Worker שמתווך ל-Anthropic API.</div>
+          <div class="hint">ב-claude.ai עובד אוטומטית · ב-Vercel עובד אוטומטית דרך /api/agent · ב-GitHub Pages הדבק כאן כתובת Worker שמתווך ל-Anthropic.</div>
         </details>
       </div>
     </div>
@@ -374,7 +374,7 @@
   $("#chips").addEventListener("click",e=>{if(e.target.dataset.q)$("#agentIn").value=e.target.dataset.q;});
   const SYS=`אתה מתכנן עריכת וידאו. החזר אך ורק JSON תקין — מערך פעולות, בלי טקסט נוסף ובלי markdown. שמות מותרים: trim{start,end} aspect{ratio:"9:16"|"1:1"|"16:9"} speed{factor} compress{crf} mute{} audio{} gif{fps} reverse{} fade{seconds} text{content} resize{height}. סדר=ביצוע. דוגמה: [{"op":"trim","start":0,"end":15},{"op":"aspect","ratio":"9:16"}]`;
   $("#planBtn").onclick=async()=>{const q=$("#agentIn").value.trim();if(!q)return;$("#planBtn").disabled=true;log("agent thinking…","warn");
-    try{const ep=$("#endpoint").value.trim()||"https://api.anthropic.com/v1/messages";
+    try{const ep=$("#endpoint").value.trim()||(location.hostname.endsWith(".vercel.app")?"/api/agent":"https://api.anthropic.com/v1/messages");
       const res=await fetch(ep,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:1000,system:SYS,messages:[{role:"user",content:q}]})});
       if(!res.ok)throw new Error("HTTP "+res.status);const data=await res.json();
       let txt=(data.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("").trim().replace(/```json|```/g,"").trim();
