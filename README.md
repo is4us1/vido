@@ -1,4 +1,4 @@
-# vido — EVENTON · STUDIO
+# vido
 
 עורך + יוצר וידאו שרץ **100% מקומית בדפדפן**. הקבצים לא עוזבים את המכשיר.
 מנוע: ffmpeg.wasm (גרסת single-thread, לא דורש headers מיוחדים → רץ ישר על GitHub Pages).

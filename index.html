@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EVENTON · STUDIO — וידאו מקומי: עריכה + יצירה</title>
+<title>vido — וידאו מקומי: עריכה + יצירה</title>
 <script src="ffmpeg/ffmpeg.js"></script>
 <script src="ffmpeg/util.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -128,7 +128,7 @@
         <path d="M14 15h10M14 22h16M14 29h7" stroke="#f0a829" stroke-width="2.4" stroke-linecap="round"/>
         <path d="M31 24l6 4-6 4z" fill="#ff5d1a"/>
       </svg>
-      <div><h1>EVENTON · STUDIO</h1><div class="sub">וידאו מקומי · עריכה + יצירה</div></div>
+      <div><h1>vido</h1><div class="sub">וידאו מקומי · עריכה + יצירה</div></div>
     </div>
     <div class="engine"><span class="dot" id="engDot"></span><span id="engTxt" class="mono">טוען מנוע…</span></div>
   </header>
@@ -266,7 +266,7 @@
   </div>
 
   <canvas class="work" id="work"></canvas>
-  <footer>EVENTON · STUDIO — הכל רץ מקומית בדפדפן שלך. הקבצים לא עוזבים את המכשיר.</footer>
+  <footer>vido — הכל רץ מקומית בדפדפן שלך. הקבצים לא עוזבים את המכשיר.</footer>
 </div>
 
 <script>
@@ -405,7 +405,7 @@
       const dat=await ffmpeg.readFile(cur);const mime=ext==="gif"?"image/gif":ext==="mp3"?"audio/mp3":"video/mp4";
       const blob=new Blob([dat.buffer],{type:mime});const url=URL.createObjectURL(blob);PROG.style.width="100%";
       const ov=$("#outVid");if(ext==="mp3"||ext==="gif")ov.classList.add("hidden");else{ov.classList.remove("hidden");ov.src=url;}
-      $("#dl").href=url;$("#dl").download="eventon-cut."+ext;$("#result").classList.add("show");
+      $("#dl").href=url;$("#dl").download="vido-cut."+ext;$("#result").classList.add("show");
       setEngine("on","הושלם");log("DONE · "+(blob.size/1048576).toFixed(2)+" MB","ok");
     }catch(e){setEngine("err","שגיאה");log("run failed: "+(e.message||e),"err");}
     busy=false;refresh();};
@@ -482,7 +482,7 @@
 
   async function finishCreate(name,ext){
     const dat=await ffmpeg.readFile(name);const blob=new Blob([dat.buffer],{type:"video/mp4"});const url=URL.createObjectURL(blob);
-    PROG.style.width="100%";$("#cOutVid").src=url;$("#cDl").href=url;$("#cDl").download="eventon-create."+ext;
+    PROG.style.width="100%";$("#cOutVid").src=url;$("#cDl").href=url;$("#cDl").download="vido-create."+ext;
     $("#cResult").classList.add("show");setEngine("on","הושלם");clog("DONE · "+(blob.size/1048576).toFixed(2)+" MB","ok");
     busy=false;refreshCreate();
   }
