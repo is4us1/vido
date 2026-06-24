@@ -420,7 +420,7 @@
       const ov=$("#outVid");if(ext==="mp3"||ext==="gif")ov.classList.add("hidden");else{ov.classList.remove("hidden");ov.src=url;}
       $("#dl").href=url;$("#dl").download="vido-cut."+ext;$("#result").classList.add("show");
       setEngine("on","הושלם");log("DONE · "+(blob.size/1048576).toFixed(2)+" MB","ok");
-    }catch(e){setEngine("err","שגיאה");log("run failed: "+(e.message||e),"err");}
+    }catch(e){setEngine("err","שגיאה");log("run failed: "+((e&&e.message)||(e&&e.type)||e),"err");}
     busy=false;refresh();};
 
   /* ========================================================= CREATE ========================================================= */
@@ -437,7 +437,10 @@
     if(imgFiles.length>8){const d=document.createElement("div");d.className="more";d.textContent="+"+(imgFiles.length-8);t.appendChild(d);}}
   function refreshCreate(){$("#makeAudio").disabled=!(ready&&audFile&&!busy);$("#makeSlides").disabled=!(ready&&imgFiles.length&&!busy);}
 
-  const loadImg=f=>new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=URL.createObjectURL(f);});
+  async function loadImg(f){
+    if(window.createImageBitmap){ try{ return await createImageBitmap(f); }catch(e){} }
+    return await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>rej(new Error("לא ניתן לפענח תמונה: "+(f&&f.name||"")));i.src=URL.createObjectURL(f);});
+  }
   function coverDraw(ctx,img,W,H){const s=Math.max(W/img.width,H/img.height),w=img.width*s,h=img.height*s;ctx.drawImage(img,(W-w)/2,(H-h)/2,w,h);}
   const canvasBytes=c=>new Promise(res=>c.toBlob(async b=>res(new Uint8Array(await b.arrayBuffer())),"image/png"));
   async function readyFont(){try{await document.fonts.load("700 64px Heebo");await document.fonts.ready;}catch(e){}}
@@ -469,7 +472,7 @@
       const fc=`[0:v]scale=${W}:${H},setsar=1[bg];[1:a]showwaves=s=${W}x200:mode=${mode}:colors=${color}[w];[bg][w]overlay=0:H-h-40[v]`;
       await ffmpeg.exec(["-loop","1","-i","bg.png","-i",ain,"-filter_complex",fc,"-map","[v]","-map","1:a","-c:v","libx264","-pix_fmt","yuv420p","-preset","veryfast","-c:a","aac","-b:a","192k","-shortest","-r","25","aout.mp4"]);
       finishCreate("aout.mp4","mp4");
-    }catch(e){setEngine("err","שגיאה");clog("נכשל: "+(e.message||e),"err");clog("אם זה filter — ייתכן ש-showwaves לא בבילד; דווח לי","warn");busy=false;refreshCreate();}
+    }catch(e){setEngine("err","שגיאה");clog("נכשל: "+((e&&e.message)||(e&&e.type)||e),"err");clog("אם זה filter — ייתכן ש-showwaves לא בבילד; דווח לי","warn");busy=false;refreshCreate();}
   };
 
   $("#makeSlides").onclick=async()=>{
@@ -485,12 +488,14 @@
         const name="sld"+String(i).padStart(3,"0")+".png";await ffmpeg.writeFile(name,await canvasBytes(work));}
       const args=["-framerate","1/"+sec,"-i","sld%03d.png"];
       if(musFile){const mext=(musFile.name.split(".").pop()||"mp3").toLowerCase();await ffmpeg.writeFile("mus."+mext,await fetchFile(musFile));args.push("-i","mus."+mext);}
-      args.push("-vf","fps=25,format=yuv420p","-c:v","libx264","-pix_fmt","yuv420p","-preset","veryfast");
+      const d=Math.max(1,Math.round(sec*25));
+      const kb=`zoompan=z='min(zoom+0.0012,1.12)':d=${d}:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s=${W}x${H}:fps=25,format=yuv420p`;
+      args.push("-vf",kb,"-c:v","libx264","-pix_fmt","yuv420p","-preset","veryfast");
       if(musFile)args.push("-c:a","aac","-b:a","192k","-shortest");
       args.push("sout.mp4");
       clog("מקודד וידאו…");await ffmpeg.exec(args);
       finishCreate("sout.mp4","mp4");
-    }catch(e){setEngine("err","שגיאה");clog("נכשל: "+(e.message||e),"err");busy=false;refreshCreate();}
+    }catch(e){setEngine("err","שגיאה");clog("נכשל: "+((e&&e.message)||(e&&e.type)||e),"err");busy=false;refreshCreate();}
   };
 
   async function finishCreate(name,ext){
