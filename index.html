@@ -284,19 +284,31 @@
 
   // ---------- boot ----------
   async function boot(){
+    const u=(p)=>new URL("ffmpeg/"+p, location.href).href;
     try{
-      if(!window.FFmpegWASM||!window.FFmpegUtil) throw new Error("CDN");
-      const {FFmpeg}=FFmpegWASM, {toBlobURL}=FFmpegUtil;
+      // stage 1: did the UMD scripts load?
+      if(!window.FFmpegWASM){ throw new Error("script ffmpeg.js לא נטען (404?) → "+u("ffmpeg.js")); }
+      if(!window.FFmpegUtil){ throw new Error("script util.js לא נטען (404?)"); }
+      // stage 2: are the engine files actually reachable on this server?
+      log("בודק נגישות קבצי מנוע…");
+      for(const f of ["814.ffmpeg.js","ffmpeg-core.js","ffmpeg-core.wasm"]){
+        let r; try{ r=await fetch(u(f),{method:"GET",headers:{Range:"bytes=0-0"}}); }
+        catch(err){ throw new Error("fetch נכשל ל-"+f+" ("+err.message+")"); }
+        if(!r.ok && r.status!==206){ throw new Error("השרת מחזיר "+r.status+" עבור "+f+" — Vercel לא מגיש את /ffmpeg/"); }
+        log("✓ "+f,"ok");
+      }
+      // stage 3: init + load
+      const {FFmpeg}=FFmpegWASM;
       ffmpeg=new FFmpeg();
       ffmpeg.on("log",({message})=>{ if(message&&!/^frame=/.test(message)) console.log(message); });
       ffmpeg.on("progress",({progress})=>{ if(busy&&PROG){const p=Math.min(99,Math.max(0,Math.round(progress*100)));PROG.style.width=p+"%";} });
-      const u=(p)=>new URL("ffmpeg/"+p, location.href).href;
+      log("טוען מנוע (32MB, רגע)…");
       await ffmpeg.load({coreURL:u("ffmpeg-core.js"),wasmURL:u("ffmpeg-core.wasm")});
       ready=true; setEngine("on","מנוע מוכן"); log("ffmpeg.wasm loaded","ok"); clog("מנוע מוכן","ok"); refresh(); refreshCreate();
     }catch(e){
       setEngine("err","מנוע לא נטען");
-      log("engine failed to load — נסה לרענן את הדף","err"); log("אם זה חוזר — בדוק שתיקיית ffmpeg/ עלתה לשרת","warn");
-      clog("מנוע לא נטען — ארח את הקובץ אצלך","err");
+      log("✗ "+(e&&e.message||e),"err");
+      clog("מנוע לא נטען: "+(e&&e.message||e),"err");
     }
   }
 
