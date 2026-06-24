@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EVENTON · STUDIO — וידאו מקומי: עריכה + יצירה</title>
-<script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/umd/ffmpeg.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@ffmpeg/util@0.12.1/dist/umd/index.js"></script>
+<script src="ffmpeg/ffmpeg.js"></script>
+<script src="ffmpeg/util.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -290,12 +290,12 @@
       ffmpeg=new FFmpeg();
       ffmpeg.on("log",({message})=>{ if(message&&!/^frame=/.test(message)) console.log(message); });
       ffmpeg.on("progress",({progress})=>{ if(busy&&PROG){const p=Math.min(99,Math.max(0,Math.round(progress*100)));PROG.style.width=p+"%";} });
-      const base="https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd";
-      await ffmpeg.load({coreURL:await toBlobURL(base+"/ffmpeg-core.js","text/javascript"),wasmURL:await toBlobURL(base+"/ffmpeg-core.wasm","application/wasm")});
+      const u=(p)=>new URL("ffmpeg/"+p, location.href).href;
+      await ffmpeg.load({coreURL:u("ffmpeg-core.js"),wasmURL:u("ffmpeg-core.wasm")});
       ready=true; setEngine("on","מנוע מוכן"); log("ffmpeg.wasm loaded","ok"); clog("מנוע מוכן","ok"); refresh(); refreshCreate();
     }catch(e){
       setEngine("err","מנוע לא נטען");
-      log("engine failed — CSP/network blocking CDN","err"); log("ארח ב-GitHub Pages או הרץ דרך שרת מקומי","warn");
+      log("engine failed to load — נסה לרענן את הדף","err"); log("אם זה חוזר — בדוק שתיקיית ffmpeg/ עלתה לשרת","warn");
       clog("מנוע לא נטען — ארח את הקובץ אצלך","err");
     }
   }
