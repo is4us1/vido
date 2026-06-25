@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>vido · לוח בקרה</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#08080a;--panel:#131318;--panel2:#1b1b22;--line:#2a2a33;--ink:#ece9e4;--muted:#8a8a96;--faint:#5a5a64;--gold:#f0a829;--gold-soft:#ffce7a;--molten:#ff5d1a;--signal:#3ddc84;--blue:#5aa9ff;--red:#ff5a5a;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:radial-gradient(900px 500px at 88% -8%,rgba(255,93,26,.08),transparent 60%),var(--bg);color:var(--ink);font-family:"Heebo",system-ui,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.5}
+  .mono{font-family:"JetBrains Mono",monospace}
+  .wrap{max-width:1180px;margin:0 auto;padding:22px}
+  header{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:12px}
+  .brand{display:flex;align-items:center;gap:11px;font-weight:900;font-size:20px}
+  .brand svg{width:30px;height:30px}
+  .brand b{color:var(--gold)}
+  .btn{border:none;border-radius:10px;font-family:inherit;font-weight:700;cursor:pointer;padding:10px 16px;font-size:13.5px;transition:.15s;display:inline-flex;align-items:center;gap:7px}
+  .btn-gold{background:linear-gradient(180deg,var(--gold),#d98e15);color:#1a1206}
+  .btn-gold:hover{filter:brightness(1.08)}
+  .btn-ghost{background:var(--panel2);border:1px solid var(--line);color:var(--ink)}
+  .btn-ghost:hover{border-color:var(--gold)}
+  input,select,textarea{background:#0c0c10;border:1px solid var(--line);border-radius:9px;color:var(--ink);font-family:inherit;font-size:14px;padding:9px 11px}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold)}
+
+  /* login */
+  #login{max-width:380px;margin:14vh auto;text-align:center}
+  #login svg{width:54px;height:54px;margin-bottom:18px}
+  #login h1{font-size:22px;margin-bottom:6px}
+  #login p{color:var(--muted);font-size:14px;margin-bottom:20px}
+  #login input{width:100%;text-align:center;margin-bottom:12px}
+  #login .err{color:var(--red);font-size:13px;margin-top:10px;min-height:18px}
+
+  /* kpis */
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+  @media(max-width:760px){.kpis{grid-template-columns:repeat(2,1fr)}}
+  .kpi{background:linear-gradient(180deg,var(--panel),#0f0f13);border:1px solid var(--line);border-radius:14px;padding:18px}
+  .kpi .n{font-size:30px;font-weight:900;line-height:1}
+  .kpi .l{color:var(--muted);font-size:13px;margin-top:6px}
+  .kpi.g .n{color:var(--gold)} .kpi.s .n{color:var(--signal)} .kpi.b .n{color:var(--blue)}
+
+  .card{background:linear-gradient(180deg,var(--panel),#0f0f13);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:18px}
+  .card h2{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:16px;font-weight:700}
+
+  /* chart */
+  .chart{display:flex;align-items:flex-end;gap:6px;height:140px;padding-top:10px}
+  .bar{flex:1;background:linear-gradient(180deg,var(--gold),var(--molten));border-radius:4px 4px 0 0;min-height:2px;position:relative;transition:.2s}
+  .bar:hover{filter:brightness(1.2)}
+  .bar span{position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--gold-soft);opacity:0;transition:.15s}
+  .bar:hover span{opacity:1}
+  .xlabels{display:flex;gap:6px;margin-top:6px}
+  .xlabels div{flex:1;text-align:center;font-size:9px;color:var(--faint)}
+
+  .cols{display:grid;grid-template-columns:1.6fr 1fr;gap:18px}
+  @media(max-width:860px){.cols{grid-template-columns:1fr}}
+
+  /* leads table */
+  .addrow{display:grid;grid-template-columns:1.2fr 1.4fr 1fr auto;gap:8px;margin-bottom:14px}
+  @media(max-width:680px){.addrow{grid-template-columns:1fr 1fr}}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th{text-align:right;color:var(--muted);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.5px;padding:8px 6px;border-bottom:1px solid var(--line)}
+  td{padding:9px 6px;border-bottom:1px solid rgba(42,42,51,.5);vertical-align:middle}
+  tr:hover td{background:rgba(240,168,41,.03)}
+  td .nm{font-weight:600} td .sub{color:var(--faint);font-size:11.5px}
+  select.status{padding:5px 8px;font-size:12px;border-radius:999px;font-weight:600}
+  .st-new{color:var(--muted)} .st-contacted{color:var(--blue)} .st-trial{color:var(--gold)} .st-customer{color:var(--signal)} .st-lost{color:var(--red)}
+  .note{width:100%;background:transparent;border:1px solid transparent;padding:5px 7px;font-size:12.5px;border-radius:7px}
+  .note:hover{border-color:var(--line)}
+  .del{color:var(--faint);cursor:pointer;font-size:17px;padding:0 6px}
+  .del:hover{color:var(--red)}
+  .empty{color:var(--faint);text-align:center;padding:26px;font-size:14px}
+
+  /* activity */
+  .feed{display:flex;flex-direction:column;gap:0}
+  .ev{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(42,42,51,.5);font-size:13px}
+  .ev .ic{width:30px;height:30px;border-radius:8px;background:var(--panel2);display:flex;align-items:center;justify-content:center;flex:0 0 30px}
+  .ev .ic svg{width:15px;height:15px;stroke:var(--gold);fill:none;stroke-width:2}
+  .ev .t{color:var(--faint);font-size:11px;margin-inline-start:auto}
+  .hidden{display:none!important}
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--panel2);border:1px solid var(--gold);color:var(--gold-soft);padding:11px 20px;border-radius:10px;font-size:13px;opacity:0;transition:.3s;pointer-events:none}
+  .toast.show{opacity:1}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login" class="wrap">
+  <svg viewBox="0 0 40 40" fill="none"><rect x="2" y="2" width="36" height="36" rx="9" stroke="#f0a829" stroke-width="2"/><path d="M16 13l11 7-11 7z" fill="#f0a829"/></svg>
+  <h1>vido · לוח בקרה</h1>
+  <p>הזן את סיסמת הניהול (ADMIN_TOKEN)</p>
+  <input type="password" id="token" placeholder="סיסמה" autocomplete="current-password">
+  <button class="btn btn-gold" id="loginBtn" style="width:100%">כניסה</button>
+  <div class="err" id="loginErr"></div>
+</div>
+
+<!-- APP -->
+<div id="app" class="wrap hidden">
+  <header>
+    <div class="brand">
+      <svg viewBox="0 0 40 40" fill="none"><rect x="2" y="2" width="36" height="36" rx="9" stroke="#f0a829" stroke-width="2"/><path d="M16 13l11 7-11 7z" fill="#f0a829"/></svg>
+      vid<b>o</b> · לוח בקרה
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-ghost" id="refreshBtn">רענן</button>
+      <button class="btn btn-ghost" id="logoutBtn">יציאה</button>
+    </div>
+  </header>
+
+  <div class="kpis">
+    <div class="kpi g"><div class="n" id="kLeads">—</div><div class="l">סה״כ לידים</div></div>
+    <div class="kpi s"><div class="n" id="kCustomers">—</div><div class="l">לקוחות</div></div>
+    <div class="kpi"><div class="n" id="kVideos">—</div><div class="l">סרטונים שנוצרו</div></div>
+    <div class="kpi b"><div class="n" id="k7">—</div><div class="l">פעילות 7 ימים</div></div>
+  </div>
+
+  <div class="card">
+    <h2>שימוש — 14 ימים אחרונים</h2>
+    <div class="chart" id="chart"></div>
+    <div class="xlabels" id="xlabels"></div>
+  </div>
+
+  <div class="cols">
+    <div class="card">
+      <h2>לידים · CRM</h2>
+      <div class="addrow">
+        <input id="nName" placeholder="שם">
+        <input id="nEmail" placeholder="אימייל / טלפון">
+        <input id="nSource" placeholder="מקור" value="ידני">
+        <button class="btn btn-gold" id="addLeadBtn">+ הוסף</button>
+      </div>
+      <table>
+        <thead><tr><th>ליד</th><th>סטטוס</th><th>הערות</th><th>מקור</th><th></th></tr></thead>
+        <tbody id="leadsBody"></tbody>
+      </table>
+      <div class="empty hidden" id="noLeads">אין לידים עדיין. הוסף אחד למעלה, או הם ייכנסו אוטומטית מ-vido.</div>
+    </div>
+
+    <div class="card">
+      <h2>פעילות אחרונה</h2>
+      <div class="feed" id="feed"></div>
+      <div class="empty hidden" id="noEvents">אין פעילות עדיין.</div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+  const $=s=>document.querySelector(s);
+  const API="api/admin";
+  let token=sessionStorage.getItem("vido_admin")||"";
+  let data={leads:[],events:[]};
+
+  const STATUSES=[["new","חדש"],["contacted","יצרתי קשר"],["trial","ניסיון"],["customer","לקוח"],["lost","אבוד"]];
+  const EVNAMES={edit:"עריכת וידאו",create_audio:"אודיו→וידאו",create_slides:"סליידשואו",unknown:"פעולה"};
+
+  function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2200);}
+  async function api(body){
+    const r=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify(body)});
+    if(r.status===401){throw new Error("401");}
+    if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error||("HTTP "+r.status));}
+    return r.json();
+  }
+
+  // login
+  $("#loginBtn").onclick=async()=>{
+    token=$("#token").value.trim(); if(!token)return;
+    $("#loginErr").textContent="בודק…";
+    try{ await load(); sessionStorage.setItem("vido_admin",token); $("#login").classList.add("hidden"); $("#app").classList.remove("hidden"); }
+    catch(e){ $("#loginErr").textContent = e.message==="401"?"סיסמה שגויה":("שגיאה: "+e.message); }
+  };
+  $("#token").addEventListener("keydown",e=>{if(e.key==="Enter")$("#loginBtn").click();});
+  $("#logoutBtn").onclick=()=>{sessionStorage.removeItem("vido_admin");location.reload();};
+  $("#refreshBtn").onclick=()=>load().then(()=>toast("רוענן")).catch(()=>{});
+
+  async function load(){ data=await api({action:"load"}); render(); }
+
+  function render(){ renderKPIs(); renderChart(); renderLeads(); renderFeed(); }
+
+  function renderKPIs(){
+    const leads=data.leads||[], events=data.events||[];
+    $("#kLeads").textContent=leads.length;
+    $("#kCustomers").textContent=leads.filter(l=>l.status==="customer").length;
+    $("#kVideos").textContent=events.length;
+    const wk=Date.now()-7*864e5;
+    $("#k7").textContent=events.filter(e=>new Date(e.created_at).getTime()>wk).length;
+  }
+
+  function renderChart(){
+    const days=14, buckets=[], now=new Date();
+    for(let i=days-1;i>=0;i--){const d=new Date(now);d.setHours(0,0,0,0);d.setDate(d.getDate()-i);buckets.push({d,c:0});}
+    (data.events||[]).forEach(e=>{const t=new Date(e.created_at);t.setHours(0,0,0,0);const b=buckets.find(x=>x.d.getTime()===t.getTime());if(b)b.c++;});
+    const max=Math.max(1,...buckets.map(b=>b.c));
+    $("#chart").innerHTML=buckets.map(b=>`<div class="bar" style="height:${Math.round(b.c/max*100)}%"><span>${b.c}</span></div>`).join("");
+    $("#xlabels").innerHTML=buckets.map((b,i)=>`<div>${i%2===0?(b.d.getDate()+"/"+(b.d.getMonth()+1)):""}</div>`).join("");
+  }
+
+  function renderLeads(){
+    const leads=data.leads||[], tb=$("#leadsBody");
+    $("#noLeads").classList.toggle("hidden",leads.length>0);
+    tb.innerHTML=leads.map(l=>{
+      const opts=STATUSES.map(([v,t])=>`<option value="${v}" ${l.status===v?"selected":""}>${t}</option>`).join("");
+      return `<tr data-id="${l.id}">
+        <td><div class="nm">${esc(l.name)||"—"}</div><div class="sub">${esc(l.email||l.phone||"")}</div></td>
+        <td><select class="status st-${l.status}" data-act="status">${opts}</select></td>
+        <td><input class="note" data-act="note" value="${esc(l.notes||"")}" placeholder="הערה…"></td>
+        <td class="sub">${esc(l.source||"")}</td>
+        <td><span class="del" data-act="del">×</span></td>
+      </tr>`;
+    }).join("");
+    tb.querySelectorAll("tr").forEach(tr=>{
+      const id=tr.dataset.id;
+      tr.querySelector('[data-act="status"]').onchange=async ev=>{const v=ev.target.value;ev.target.className="status st-"+v;try{await api({action:"updateLead",id,status:v});toast("עודכן");}catch(e){toast("שגיאה");}};
+      const note=tr.querySelector('[data-act="note"]');
+      note.onblur=async()=>{try{await api({action:"updateLead",id,notes:note.value});}catch(e){}};
+      tr.querySelector('[data-act="del"]').onclick=async()=>{if(!confirm("למחוק את הליד?"))return;try{await api({action:"deleteLead",id});await load();}catch(e){toast("שגיאה");}};
+    });
+  }
+
+  $("#addLeadBtn").onclick=async()=>{
+    const name=$("#nName").value.trim(), ec=$("#nEmail").value.trim(), source=$("#nSource").value.trim()||"ידני";
+    if(!name&&!ec){toast("מלא שם או אימייל");return;}
+    const isEmail=/@/.test(ec);
+    try{ await api({action:"addLead",name,email:isEmail?ec:null,phone:isEmail?null:ec,source}); $("#nName").value="";$("#nEmail").value=""; await load(); toast("ליד נוסף"); }
+    catch(e){ toast("שגיאה: "+e.message); }
+  };
+
+  function renderFeed(){
+    const events=(data.events||[]).slice(0,40);
+    $("#noEvents").classList.toggle("hidden",events.length>0);
+    $("#feed").innerHTML=events.map(e=>`<div class="ev">
+      <div class="ic"><svg viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z"/></svg></div>
+      <div><div>${EVNAMES[e.type]||esc(e.type)}</div>${e.detail?`<div class="sub" style="color:var(--faint);font-size:11px">${esc(e.detail)}</div>`:""}</div>
+      <div class="t">${timeAgo(e.created_at)}</div>
+    </div>`).join("");
+  }
+
+  function esc(s){return (s==null?"":String(s)).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+  function timeAgo(d){const s=(Date.now()-new Date(d).getTime())/1000;if(s<60)return"עכשיו";if(s<3600)return Math.floor(s/60)+" דק'";if(s<86400)return Math.floor(s/3600)+" שע'";return Math.floor(s/86400)+" ימים";}
+
+  // auto-login if token saved
+  if(token){ load().then(()=>{$("#login").classList.add("hidden");$("#app").classList.remove("hidden");}).catch(()=>{sessionStorage.removeItem("vido_admin");}); }
+})();
+</script>
+</body>
+</html>
