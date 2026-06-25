@@ -353,20 +353,49 @@
 
   const ax=()=>hasAudio?["-c:a","aac","-b:a","160k"]:["-an"];
   const atempo=f=>{let c=[],r=f;while(r>2){c.push("atempo=2.0");r/=2;}while(r<0.5){c.push("atempo=0.5");r*=2;}c.push("atempo="+r.toFixed(3));return c.join(",");};
-  function buildTrim(s,e){return{title:"חיתוך",desc:`${s}s → ${e}s`,run:(i,o)=>{duration=Math.max(0,e-s);return["-ss",String(s),"-to",String(e),"-i",i,"-c:v","libx264","-preset","veryfast",...ax(),o("mp4")];}};}
-  function buildAspect(r,size,title){const[rw,rh]=r.split(":").map(Number);const[w,h]=size.split(":");return{title,desc:"חיתוך + סקייל",run:(i,o)=>["-i",i,"-vf",`crop='min(iw,ih*${rw}/${rh})':'min(ih,iw*${rh}/${rw})',scale=${w}:${h}`,"-c:v","libx264","-preset","veryfast",...ax(),o("mp4")]};}
-  function buildSpeed(f){return{title:"מהירות",desc:`×${f}`,run:(i,o)=>{duration/=f;const a=hasAudio?["-af",atempo(f)]:[];return["-i",i,"-vf",`setpts=${(1/f).toFixed(4)}*PTS`,...a,"-c:v","libx264","-preset","veryfast",...(hasAudio?["-c:a","aac"]:["-an"]),o("mp4")];}};}
-  function buildCompress(c){return{title:"דחיסה",desc:`crf ${c}`,run:(i,o)=>["-i",i,"-c:v","libx264","-crf",String(c),"-preset","veryfast",...ax(),o("mp4")]};}
-  function buildMute(){return{title:"השתקה",desc:"ללא סאונד",run:(i,o)=>{hasAudio=false;return["-i",i,"-c:v","copy","-an",o("mp4")];}};}
-  function buildAudio(){return{title:"חילוץ אודיו",desc:"mp3",terminal:true,run:(i,o)=>["-i",i,"-vn","-c:a","libmp3lame","-q:a","2",o("mp3")]};}
-  function buildGif(fps,w){return{title:"GIF",desc:`${fps}fps`,terminal:true,run:(i,o)=>["-i",i,"-vf",`fps=${fps},scale=${w}:-1:flags=lanczos`,"-loop","0",o("gif")]};}
-  function buildReverse(){return{title:"היפוך",desc:"reverse",run:(i,o)=>["-i",i,"-vf","reverse",...(hasAudio?["-af","areverse","-c:a","aac"]:["-an"]),"-c:v","libx264","-preset","veryfast",o("mp4")]};}
-  function buildFade(d){return{title:"פייד",desc:`${d}s`,run:(i,o)=>{const out=Math.max(0,(duration||1)-d);return["-i",i,"-vf",`fade=t=in:st=0:d=${d},fade=t=out:st=${out.toFixed(2)}:d=${d}`,"-c:v","libx264","-preset","veryfast",...ax(),o("mp4")];}};}
-  function buildResize(h){return{title:"רזולוציה",desc:`${h}p`,run:(i,o)=>["-i",i,"-vf",`scale=-2:${h}`,"-c:v","libx264","-preset","veryfast",...ax(),o("mp4")]};}
-  function buildText(t){const safe=t.replace(/\\/g,"").replace(/'/g,"").replace(/:/g,"\\:").replace(/%/g,"");return{title:"כיתוב",desc:t,needsFont:true,run:(i,o)=>["-i",i,"-vf",`drawtext=fontfile=/font.ttf:text='${safe}':x=(w-text_w)/2:y=h*0.82:fontsize=h*0.06:fontcolor=white:box=1:boxcolor=black@0.45:boxborderw=18`,"-c:v","libx264","-preset","veryfast",...ax(),o("mp4")]};}
+  function buildTrim(s,e){return{type:"trim",p:{start:s,end:e},title:"חיתוך",desc:`${s}s → ${e}s`,run:(i,o)=>{duration=Math.max(0,e-s);return["-ss",String(s),"-to",String(e),"-i",i,"-c:v","libx264","-preset","veryfast",...ax(),o("mp4")];}};}
+  function buildAspect(r,size,title){const[rw,rh]=r.split(":").map(Number);const[w,h]=size.split(":");return{type:"aspect",p:{ratio:r,size,title},title,desc:"חיתוך + סקייל",run:(i,o)=>["-i",i,"-vf",`crop='min(iw,ih*${rw}/${rh})':'min(ih,iw*${rh}/${rw})',scale=${w}:${h}`,"-c:v","libx264","-preset","veryfast",...ax(),o("mp4")]};}
+  function buildSpeed(f){return{type:"speed",p:{factor:f},title:"מהירות",desc:`×${f}`,run:(i,o)=>{duration/=f;const a=hasAudio?["-af",atempo(f)]:[];return["-i",i,"-vf",`setpts=${(1/f).toFixed(4)}*PTS`,...a,"-c:v","libx264","-preset","veryfast",...(hasAudio?["-c:a","aac"]:["-an"]),o("mp4")];}};}
+  function buildCompress(c){return{type:"compress",p:{crf:c},title:"דחיסה",desc:`crf ${c}`,run:(i,o)=>["-i",i,"-c:v","libx264","-crf",String(c),"-preset","veryfast",...ax(),o("mp4")]};}
+  function buildMute(){return{type:"mute",p:{},title:"השתקה",desc:"ללא סאונד",run:(i,o)=>{hasAudio=false;return["-i",i,"-c:v","copy","-an",o("mp4")];}};}
+  function buildAudio(){return{type:"audio",p:{},title:"חילוץ אודיו",desc:"mp3",terminal:true,run:(i,o)=>["-i",i,"-vn","-c:a","libmp3lame","-q:a","2",o("mp3")]};}
+  function buildGif(fps,w){return{type:"gif",p:{fps,w},title:"GIF",desc:`${fps}fps`,terminal:true,run:(i,o)=>["-i",i,"-vf",`fps=${fps},scale=${w}:-1:flags=lanczos`,"-loop","0",o("gif")]};}
+  function buildReverse(){return{type:"reverse",p:{},title:"היפוך",desc:"reverse",run:(i,o)=>["-i",i,"-vf","reverse",...(hasAudio?["-af","areverse","-c:a","aac"]:["-an"]),"-c:v","libx264","-preset","veryfast",o("mp4")]};}
+  function buildFade(d){return{type:"fade",p:{sec:d},title:"פייד",desc:`${d}s`,run:(i,o)=>{const out=Math.max(0,(duration||1)-d);return["-i",i,"-vf",`fade=t=in:st=0:d=${d},fade=t=out:st=${out.toFixed(2)}:d=${d}`,"-c:v","libx264","-preset","veryfast",...ax(),o("mp4")];}};}
+  function buildResize(h){return{type:"resize",p:{h},title:"רזולוציה",desc:`${h}p`,run:(i,o)=>["-i",i,"-vf",`scale=-2:${h}`,"-c:v","libx264","-preset","veryfast",...ax(),o("mp4")]};}
+  function buildText(t){const safe=t.replace(/\\/g,"").replace(/'/g,"").replace(/:/g,"\\:").replace(/%/g,"");return{type:"text",p:{t},title:"כיתוב",desc:t,needsFont:true,run:(i,o)=>["-i",i,"-vf",`drawtext=fontfile=/font.ttf:text='${safe}':x=(w-text_w)/2:y=h*0.82:fontsize=h*0.06:fontcolor=white:box=1:boxcolor=black@0.45:boxborderw=18`,"-c:v","libx264","-preset","veryfast",...ax(),o("mp4")]};}
+
+  function makeOp(t,p){switch(t){case"trim":return buildTrim(p.start,p.end);case"aspect":return buildAspect(p.ratio,p.size,p.title);case"speed":return buildSpeed(p.factor);case"compress":return buildCompress(p.crf);case"mute":return buildMute();case"audio":return buildAudio();case"gif":return buildGif(p.fps,p.w);case"reverse":return buildReverse();case"fade":return buildFade(p.sec);case"resize":return buildResize(p.h);case"text":return buildText(p.t);}}
+
+  // ---- agent: validate + auto-fix the queue before running ----
+  function autoFix(){
+    const notes=[]; const out=[]; let dur=vid.duration||duration||0; let terminated=false;
+    for(const op of ops){
+      if(terminated){ notes.push(`הסרתי "${op.title}" — אחרי פעולה סופית`); continue; }
+      const p=Object.assign({},op.p||{}); let keep=op;
+      if(op.type==="trim"){
+        let s=Math.max(0,Math.min(+p.start||0,dur)), e=Math.max(0,Math.min(+p.end||0,dur));
+        if(e-s<0.05){ notes.push(`הסרתי חיתוך לא תקין (${p.start}s→${p.end}s)`); continue; }
+        if(s!==p.start||e!==p.end) notes.push(`תיקנתי חיתוך → ${s.toFixed(0)}s–${e.toFixed(0)}s`);
+        dur=e-s; keep=makeOp("trim",{start:s,end:e});
+      }else if(op.type==="speed"){
+        if(!(+p.factor>0)){ notes.push("הסרתי מהירות לא תקינה"); continue; } dur=dur/p.factor;
+      }else if(op.type==="compress"){
+        const c=Math.max(1,Math.min(51,Math.round(+p.crf))); if(c!==p.crf){ notes.push(`תיקנתי איכות → crf ${c}`); keep=makeOp("compress",{crf:c}); }
+      }else if(op.type==="resize"){
+        const h=Math.max(120,Math.min(2160,Math.round(+p.h))); if(h!==p.h){ notes.push(`תיקנתי רזולוציה → ${h}p`); keep=makeOp("resize",{h}); }
+      }else if(op.type==="fade"){
+        let sc=+p.sec||0.8; const mx=Math.max(0.2,dur/2); if(sc>mx){ sc=mx; notes.push(`קיצרתי פייד → ${sc.toFixed(1)}s`); keep=makeOp("fade",{sec:sc}); }
+      }else if(op.type==="gif"){
+        const f=Math.max(1,Math.min(30,Math.round(+p.fps))); if(f!==p.fps) keep=makeOp("gif",{fps:f,w:p.w});
+      }
+      out.push(keep); if(keep.terminal) terminated=true;
+    }
+    return {ops:out,notes};
+  }
 
   $("#tools").addEventListener("click",e=>{const t=e.target.closest(".tool");if(!t)return;const k=t.dataset.tool;
-    if(k==="trim"){const s=+prompt("התחל בשנייה:",0),en=+prompt("סיים בשנייה:",duration.toFixed(1));if(isNaN(s)||isNaN(en))return;addOp(buildTrim(s,en));}
+    if(k==="trim"){const s=+prompt("התחל בשנייה:",0),en=+prompt("סיים בשנייה:",duration.toFixed(1));if(isNaN(s)||isNaN(en))return;if(en-s<0.05){log("חיתוך לא תקין — הסוף חייב להיות אחרי ההתחלה","warn");return;}addOp(buildTrim(s,en));}
     else if(k==="vertical")addOp(buildAspect("9:16","720:1280","אנכי 9:16"));
     else if(k==="square")addOp(buildAspect("1:1","1080:1080","ריבוע 1:1"));
     else if(k==="speed"){const f=+prompt("פקטור מהירות:",2);if(!f||f<=0)return;addOp(buildSpeed(f));}
@@ -404,17 +433,32 @@
     case"text":return buildText(p.content||"טקסט");case"resize":return buildResize(+p.height||720);default:return null;}}
 
   $("#runBtn").onclick=async()=>{
-    if(busy||!ready||!ops.length)return;busy=true;PROG=$("#progBar");PROG.style.width="0%";
+    if(busy||!ready||!ops.length)return;
+    // --- agent pass: validate + auto-fix the queue ---
+    const fixed=autoFix(); ops=fixed.ops; renderRail();
+    fixed.notes.forEach(n=>log("🔧 הסוכן: "+n,"warn"));
+    if(!ops.length){ log("הסוכן הסיר את כל הפעולות כי לא היו תקינות — הוסף פעולה חוקית","err"); refresh(); return; }
+    busy=true;PROG=$("#progBar");PROG.style.width="0%";
     setEngine("busy","מעבד…");$("#result").classList.remove("show");refresh();
     const {fetchFile}=FU();let cur="src_"+srcName,ext="mp4";
     try{await ffmpeg.writeFile(cur,await fetchFile(srcFile));hasAudio=true;duration=vid.duration||0;opCounter=0;
-      const nodes=$("#rail").querySelectorAll(".op");
+      const nodes=$("#rail").querySelectorAll(".op"); let okCount=0;
       for(let i=0;i<ops.length;i++){const op=ops[i];nodes.forEach(n=>n.classList.remove("active"));if(nodes[i])nodes[i].classList.add("active");
         log(`[${i+1}/${ops.length}] ${op.title}…`);if(op.needsFont)await ensureFont();
-        let out;const o=x=>{out="out_"+(opCounter++)+"."+x;ext=x;return out;};
-        await ffmpeg.exec(op.run(cur,o));cur=out;
-        if(nodes[i]){nodes[i].classList.remove("active");nodes[i].classList.add("done");}
-        if(op.terminal)break;}
+        let outName,outExt;const o=x=>{outName="out_"+(opCounter++)+"."+x;outExt=x;return outName;};
+        try{
+          await ffmpeg.exec(op.run(cur,o));
+          const chk=await ffmpeg.readFile(outName);
+          if(!chk||chk.length<64) throw new Error("פלט ריק");
+          cur=outName;ext=outExt;okCount++;
+          if(nodes[i]){nodes[i].classList.remove("active");nodes[i].classList.add("done");}
+          if(op.terminal)break;
+        }catch(opErr){
+          if(nodes[i])nodes[i].classList.remove("active");
+          log(`⚠ דילגתי על "${op.title}" — ${((opErr&&opErr.message)||opErr)}`,"warn");
+        }
+      }
+      if(!okCount) throw new Error("אף פעולה לא הצליחה");
       const dat=await ffmpeg.readFile(cur);const mime=ext==="gif"?"image/gif":ext==="mp3"?"audio/mp3":"video/mp4";
       const blob=new Blob([dat.buffer],{type:mime});const url=URL.createObjectURL(blob);PROG.style.width="100%";
       const ov=$("#outVid");if(ext==="mp3"||ext==="gif")ov.classList.add("hidden");else{ov.classList.remove("hidden");ov.src=url;}
