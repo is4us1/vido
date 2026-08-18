@@ -1,0 +1,24 @@
+[
+  {
+    "id": "example-directory",
+    "name": "תבנית לדוגמה — ספריית קבוצות",
+    "startUrls": ["https://example.com/whatsapp-groups"],
+    "followPatterns": ["/whatsapp-groups(/|\\?page=)", "/category/"],
+    "ignorePatterns": ["/login", "/register", "\\?sort=", "/tag/"],
+    "maxPages": 60,
+    "enabled": false,
+    "assumeIsraeli": true,
+    "notes": "תבנית להעתקה. החלף את הדומיין והדפוסים בספרייה אמיתית שבדקת. הזחלן בודק robots.txt לבד ולא ייגע בעמודים אסורים."
+  },
+  {
+    "id": "israeli-forum-threads",
+    "name": "פורום/בלוג ישראלי עם רשימות קבוצות",
+    "startUrls": ["https://example.co.il/forum/whatsapp"],
+    "followPatterns": ["/forum/whatsapp/", "/thread/"],
+    "ignorePatterns": ["/user/", "/search"],
+    "maxPages": 40,
+    "enabled": false,
+    "assumeIsraeli": true,
+    "notes": "אתרי פורום נותנים הקשר טקסטואלי עשיר — הסיווג עובד עליהם טוב במיוחד."
+  }
+]

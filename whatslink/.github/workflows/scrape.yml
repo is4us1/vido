@@ -1,0 +1,57 @@
+name: איסוף שבועי
+
+on:
+  schedule:
+    # כל יום ראשון ב-03:00 UTC
+    - cron: "0 3 * * 0"
+  workflow_dispatch:
+    inputs:
+      source:
+        description: "מזהה מקור בודד (ריק = כל המקורות הפעילים)"
+        required: false
+      max_pages:
+        description: "מקסימום עמודים לכל מקור"
+        required: false
+        default: "120"
+
+permissions:
+  contents: write
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - run: npm ci
+
+      - name: בדיקות
+        run: npm test
+
+      - name: איסוף
+        env:
+          SCRAPER_CONTACT_URL: https://github.com/${{ github.repository }}
+          SCRAPER_MAX_PAGES: ${{ github.event.inputs.max_pages || '120' }}
+        run: |
+          if [ -n "${{ github.event.inputs.source }}" ]; then
+            npm run scrape -- --source="${{ github.event.inputs.source }}"
+          else
+            npm run scrape
+          fi
+
+      - name: שמירת המאגר המעודכן
+        run: |
+          if git diff --quiet -- data/groups.json; then
+            echo "אין שינוי במאגר"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/groups.json
+          git commit -m "עדכון מאגר קבוצות ($(date -u +%Y-%m-%d))"
+          git push

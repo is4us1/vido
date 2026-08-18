@@ -1,0 +1,688 @@
+{
+  "updatedAt": "2026-08-18T09:00:00.000Z",
+  "groups": [
+    {
+      "id": "DEMO01XXXXXXXXXXXXXX",
+      "url": "https://chat.whatsapp.com/DEMO01XXXXXXXXXXXXXX",
+      "title": "דרושים הייטק — מרכז והשרון",
+      "description": "משרות פיתוח, QA, DevOps ומוצר באזור תל אביב, הרצליה ורעננה. מפרסמים משרות חדשות כל בוקר.",
+      "category": "jobs",
+      "categoryScore": 20,
+      "tags": [
+        "דרושים",
+        "משרות",
+        "הייטק",
+        "qa",
+        "devops",
+        "חדשות"
+      ],
+      "israeli": true,
+      "israeliScore": 9,
+      "israeliSignals": [
+        "עברית דומיננטית",
+        "מקום: תל אביב",
+        "מקור ישראלי"
+      ],
+      "source": "demo",
+      "sourceUrl": "https://example.com/demo",
+      "firstSeen": "2026-08-18T09:00:00.000Z",
+      "lastSeen": "2026-08-18T09:00:00.000Z"
+    },
+    {
+      "id": "DEMO02XXXXXXXXXXXXXX",
+      "url": "https://chat.whatsapp.com/DEMO02XXXXXXXXXXXXXX",
+      "title": "משרות סטודנטים בירושלים",
+      "description": "עבודות במשרה חלקית לסטודנטים באוניברסיטה העברית ובמכללות בירושלים.",
+      "category": "jobs",
+      "categoryScore": 13,
+      "tags": [
+        "משרות",
+        "עבודות",
+        "סטודנטים"
+      ],
+      "israeli": true,
+      "israeliScore": 11,
+      "israeliSignals": [
+        "עברית דומיננטית",
+        "מקום: ירושלים",
+        "מונח מקומי: עברית",
+        "מקור ישראלי"
+      ],
+      "source": "demo",
+      "sourceUrl": "https://example.com/demo",
+      "firstSeen": "2026-08-18T09:00:00.000Z",
+      "lastSeen": "2026-08-18T09:00:00.000Z"
+    },
+    {
+      "id": "DEMO03XXXXXXXXXXXXXX",
+      "url": "https://chat.whatsapp.com/DEMO03XXXXXXXXXXXXXX",
+      "title": "דירות להשכרה בתל אביב ללא תיווך",
+      "description": "דירות ושותפים לדירה בתל אביב וגבעתיים. מחירים בשקלים, בלי דמי תיווך.",
+      "category": "real-estate",
+      "categoryScore": 28.34,
+      "tags": [
+        "דירות להשכרה",
+        "שותפים לדירה",
+        "דירות"
+      ],
+      "israeli": true,
+      "israeliScore": 11,
+      "israeliSignals": [
+        "עברית דומיננטית",
+        "מקום: תל אביב",
+        "מונח מקומי: שקל",
+        "מקור ישראלי"
+      ],
+      "source": "demo",
+      "sourceUrl": "https://example.com/demo",
+      "firstSeen": "2026-08-18T09:00:00.000Z",
+      "lastSeen": "2026-08-18T09:00:00.000Z"
+    },
+    {
+      "id": "DEMO04XXXXXXXXXXXXXX",
+      "url": "https://chat.whatsapp.com/DEMO04XXXXXXXXXXXXXX",
+      "title": "נדל\"ן והשקעות בצפון",
+      "description": "דירות למכירה בחיפה, כרמיאל ונהריה. דיונים על משכנתא ופרויקטים חדשים.",
+      "category": "real-estate",
+      "categoryScore": 27,
+      "tags": [
+        "דירות למכירה",
+        "נדל\"ן",
+        "דירות",
+        "משכנתא",
+        "פרויקטים חדשים"
+      ],
+      "israeli": true,
+      "israeliScore": 9,
+      "israeliSignals": [
+        "עברית דומיננטית",
+        "מקום: חיפה",
+        "מקור ישראלי"
+      ],
+      "source": "demo",
+      "sourceUrl": "https://example.com/demo",
+      "firstSeen": "2026-08-18T09:00:00.000Z",
+      "lastSeen": "2026-08-18T09:00:00.000Z"
+    },
+    {
+      "id": "DEMO05XXXXXXXXXXXXXX",
+      "url": "https://chat.whatsapp.com/DEMO05XXXXXXXXXXXXXX",
+      "title": "יד שנייה בשרון — קונים ומוכרים",
+      "description": "מוכרים ריהוט, מוצרי חשמל וציוד לתינוק יד שנייה בכפר סבא, רעננה והוד השרון.",
+      "category": "second-hand",
+      "categoryScore": 28.51,
+      "tags": [
+        "יד שנייה",
+        "קונים ומוכרים",
+        "מוכרים",
+        "ציוד לתינוק"
+      ],
+      "israeli": true,
+      "israeliScore": 9,
+      "israeliSignals": [
+        "עברית דומיננטית",
+        "מקום: כפר סבא",
+        "מקור ישראלי"
+      ],
+      "source": "demo",
+      "sourceUrl": "https://example.com/demo",
+      "firstSeen": "2026-08-18T09:00:00.000Z",
+      "lastSeen": "2026-08-18T09:00:00.000Z"
+    },
+    {
+      "id": "DEMO06XXXXXXXXXXXXXX",
+      "url": "https://chat.whatsapp.com/DEMO06XXXXXXXXXXXXXX",
+      "title": "למסירה בחינם ברמת גן",
+      "description": "פריטים למסירה בחינם לתושבי רמת גן וגבעתיים. אין מכירות.",
+      "category": "second-hand",
+      "categoryScore": 23.68,
+      "tags": [
+        "למסירה",
+        "בחינם",
+        "מכירות"
+      ],
+      "israeli": true,
+      "israeliScore": 9,
+      "israeliSignals": [
+        "עברית דומיננטית",
+        "מקום: רמת גן",
+        "מקור ישראלי"
+      ],
+      "source": "demo",
+      "sourceUrl": "https://example.com/demo",
+      "firstSeen": "2026-08-18T09:00:00.000Z",
+      "lastSeen": "2026-08-18T09:00:00.000Z"
+    },
+    {
+      "id": "DEMO07XXXXXXXXXXXXXX",
+      "url": "https://chat.whatsapp.com/DEMO07XXXXXXXXXXXXXX",
+      "title": "דילים והנחות — עלי אקספרס",
+      "description": "קופונים, מבצעים והנחות מהרשת. דילים חמים מעודכנים כל יום.",
+      "category": "deals",
+      "categoryScore": 35.51,
+      "tags": [
+        "דילים",
+        "מבצעים",
+        "קופונים",
+        "עלי אקספרס"
+      ],
+      "israeli": true,
+      "israeliScore": 6,
+      "israeliSignals": [
+        "עברית דומיננטית",
+        "מקור ישראלי"
+      ],
+      "source": "demo",
+      "sourceUrl": "https://example.com/demo",
+      "firstSeen": "2026-08-18T09:00:00.000Z",
+      "lastSeen": "2026-08-18T09:00:00.000Z"
+    },
+    {
+      "id": "DEMO08XXXXXXXXXXXXXX",
+      "url": "https://chat.whatsapp.com/DEMO08XXXXXXXXXXXXXX",
+      "title": "מתכנתים ישראל — עזרה הדדית",
+      "description": "שאלות תכנות, פייתון, javascript ובינה מלאכותית. קהילת מפתחים ישראלית.",
+      "category": "tech",
+      "categoryScore": 32,
+      "tags": [
+        "מתכנתים",
+        "תכנות",
+        "בינה מלאכותית",
+        "פייתון",
+        "javascript",
+        "קהילת"
+      ],
+      "israeli": true,
+      "israeliScore": 11,
+      "israeliSignals": [
+        "עברית דומיננטית",
+        "מקום: ישראל",
+        "מונח מקומי: ישראל",
+        "מקור ישראלי"
+      ],
+      "source": "demo",
+      "sourceUrl": "https://example.com/demo",
+      "firstSeen": "2026-08-18T09:00:00.000Z",
+      "lastSeen": "2026-08-18T09:00:00.000Z"
+    },
+    {
+      "id": "DEMO09XXXXXXXXXXXXXX",
+      "url": "https://chat.whatsapp.com/DEMO09XXXXXXXXXXXXXX",
+      "title": "סייבר ואבטחת מידע",
+      "description": "חדשות סייבר, כלים ואבטחת מידע. דיונים מקצועיים בעברית.",
+      "category": "tech",
+      "categoryScore": 25.85,
+      "tags": [
+        "סייבר",
+        "אבטחת מידע",
+        "חדשות"
+      ],
+      "israeli": true,
+      "israeliScore": 8,
+      "israeliSignals": [
+        "עברית דומיננטית",
+        "מונח מקומי: עברית",
+        "מקור ישראלי"
+      ],
+      "source": "demo",
+      "sourceUrl": "https://example.com/demo",
+      "firstSeen": "2026-08-18T09:00:00.000Z",
+      "lastSeen": "2026-08-18T09:00:00.000Z"
+    },
+    {
+      "id": "DEMO10XXXXXXXXXXXXXX",
+      "url": "https://chat.whatsapp.com/DEMO10XXXXXXXXXXXXXX",
+      "title": "פסיכומטרי — סיכומים ותרגולים",
+      "description": "קבוצת תלמידים לקראת הפסיכומטרי. סיכומים, מבחנים ושיעורים פרטיים.",
+      "category": "study",
+      "categoryScore": 34.34,
+      "tags": [
+        "פסיכומטרי",
+        "שיעורים פרטיים",
+        "מבחנים",
+        "סיכומים",
+        "תלמידים"
+      ],
+      "israeli": true,
+      "israeliScore": 8,
+      "israeliSignals": [
+        "עברית דומיננטית",
+        "מונח מקומי: פסיכומטרי",
+        "מקור ישראלי"
+      ],
+      "source": "demo",
+      "sourceUrl": "https://example.com/demo",
+      "firstSeen": "2026-08-18T09:00:00.000Z",
+      "lastSeen": "2026-08-18T09:00:00.000Z"
+    },
+    {
+      "id": "DEMO11XXXXXXXXXXXXXX",
+      "url": "https://chat.whatsapp.com/DEMO11XXXXXXXXXXXXXX",
+      "title": "חדר כושר ותזונה נכונה",
+      "description": "אימונים, תזונה, הרזיה וכושר. טיפים מאנשי מקצוע ישראלים.",
+      "category": "health",
+      "categoryScore": 36,
+      "tags": [
+        "כושר",
+        "חדר כושר",
+        "תזונה",
+        "הרזיה",
+        "אימונים"
+      ],
+      "israeli": true,
+      "israeliScore": 11,
+      "israeliSignals": [
+        "עברית דומיננטית",
+        "מקום: ישראל",
+        "מונח מקומי: ישראל",
+        "מקור ישראלי"
+      ],
+      "source": "demo",
+      "sourceUrl": "https://example.com/demo",
+      "firstSeen": "2026-08-18T09:00:00.000Z",
+      "lastSeen": "2026-08-18T09:00:00.000Z"
+    },
+    {
+      "id": "DEMO12XXXXXXXXXXXXXX",
+      "url": "https://chat.whatsapp.com/DEMO12XXXXXXXXXXXXXX",
+      "title": "תרמילאים בדרום אמריקה",
+      "description": "מטיילים ישראלים בדרום אמריקה. טיסות זולות, מסלולי טיול והמלצות מהשטח.",
+      "category": "travel",
+      "categoryScore": 47.34,
+      "tags": [
+        "טיול",
+        "תרמילאים",
+        "טיסות",
+        "טיסות זולות",
+        "מטיילים",
+        "דרום אמריקה",
+        "מסלולי טיול"
+      ],
+      "israeli": true,
+      "israeliScore": 11,
+      "israeliSignals": [
+        "עברית דומיננטית",
+        "מקום: ישראל",
+        "מונח מקומי: ישראל",
+        "מקור ישראלי"
+      ],
+      "source": "demo",
+      "sourceUrl": "https://example.com/demo",
+      "firstSeen": "2026-08-18T09:00:00.000Z",
+      "lastSeen": "2026-08-18T09:00:00.000Z"
+    },
+    {
+      "id": "DEMO13XXXXXXXXXXXXXX",
+      "url": "https://chat.whatsapp.com/DEMO13XXXXXXXXXXXXXX",
+      "title": "צימרים ונופש בצפון",
+      "description": "המלצות על צימרים בגליל ובגולן, חופשה משפחתית ומסלולי טיול.",
+      "category": "travel",
+      "categoryScore": 25.92,
+      "tags": [
+        "טיול",
+        "חופשה",
+        "צימרים",
+        "מסלולי טיול"
+      ],
+      "israeli": true,
+      "israeliScore": 6,
+      "israeliSignals": [
+        "עברית דומיננטית",
+        "מקור ישראלי"
+      ],
+      "source": "demo",
+      "sourceUrl": "https://example.com/demo",
+      "firstSeen": "2026-08-18T09:00:00.000Z",
+      "lastSeen": "2026-08-18T09:00:00.000Z"
+    },
+    {
+      "id": "DEMO14XXXXXXXXXXXXXX",
+      "url": "https://chat.whatsapp.com/DEMO14XXXXXXXXXXXXXX",
+      "title": "מבזקי חדשות ועדכונים",
+      "description": "מבזקים, אקטואליה והתרעות פיקוד העורף בזמן אמת.",
+      "category": "news",
+      "categoryScore": 28,
+      "tags": [
+        "חדשות",
+        "מבזקים",
+        "אקטואליה",
+        "פיקוד העורף"
+      ],
+      "israeli": true,
+      "israeliScore": 6,
+      "israeliSignals": [
+        "עברית דומיננטית",
+        "מקור ישראלי"
+      ],
+      "source": "demo",
+      "sourceUrl": "https://example.com/demo",
+      "firstSeen": "2026-08-18T09:00:00.000Z",
+      "lastSeen": "2026-08-18T09:00:00.000Z"
+    },
+    {
+      "id": "DEMO15XXXXXXXXXXXXXX",
+      "url": "https://chat.whatsapp.com/DEMO15XXXXXXXXXXXXXX",
+      "title": "כדורגל ישראלי — אוהדים",
+      "description": "דיונים על הליגה, מכבי והפועל, ליגת האלופות וטוטו.",
+      "category": "sports",
+      "categoryScore": 28,
+      "tags": [
+        "כדורגל",
+        "מכבי",
+        "ליגת האלופות",
+        "אוהדים"
+      ],
+      "israeli": true,
+      "israeliScore": 11,
+      "israeliSignals": [
+        "עברית דומיננטית",
+        "מקום: ישראל",
+        "מונח מקומי: ישראל",
+        "מקור ישראלי"
+      ],
+      "source": "demo",
+      "sourceUrl": "https://example.com/demo",
+      "firstSeen": "2026-08-18T09:00:00.000Z",
+      "lastSeen": "2026-08-18T09:00:00.000Z"
+    },
+    {
+      "id": "DEMO16XXXXXXXXXXXXXX",
+      "url": "https://chat.whatsapp.com/DEMO16XXXXXXXXXXXXXX",
+      "title": "המלצות סרטים וסדרות",
+      "description": "מה לראות בנטפליקס — המלצות סרטים, סדרות ובידור.",
+      "category": "music",
+      "categoryScore": 17.92,
+      "tags": [
+        "סרטים",
+        "סדרות"
+      ],
+      "israeli": true,
+      "israeliScore": 6,
+      "israeliSignals": [
+        "עברית דומיננטית",
+        "מקור ישראלי"
+      ],
+      "source": "demo",
+      "sourceUrl": "https://example.com/demo",
+      "firstSeen": "2026-08-18T09:00:00.000Z",
+      "lastSeen": "2026-08-18T09:00:00.000Z"
+    },
+    {
+      "id": "DEMO17XXXXXXXXXXXXXX",
+      "url": "https://chat.whatsapp.com/DEMO17XXXXXXXXXXXXXX",
+      "title": "מתכונים ובישול ביתי",
+      "description": "מתכונים, אפייה וקונדיטוריה. גם טבעוני וגם כשר.",
+      "category": "food",
+      "categoryScore": 27.51,
+      "tags": [
+        "מתכונים",
+        "אפייה",
+        "טבעוני",
+        "כשר"
+      ],
+      "israeli": true,
+      "israeliScore": 6,
+      "israeliSignals": [
+        "עברית דומיננטית",
+        "מקור ישראלי"
+      ],
+      "source": "demo",
+      "sourceUrl": "https://example.com/demo",
+      "firstSeen": "2026-08-18T09:00:00.000Z",
+      "lastSeen": "2026-08-18T09:00:00.000Z"
+    },
+    {
+      "id": "DEMO18XXXXXXXXXXXXXX",
+      "url": "https://chat.whatsapp.com/DEMO18XXXXXXXXXXXXXX",
+      "title": "אמהות בחיפה והקריות",
+      "description": "קבוצת תמיכה להורים ואמהות: הריון, לידה, גן ילדים וציוד לתינוק.",
+      "category": "family",
+      "categoryScore": 37,
+      "tags": [
+        "אמהות",
+        "ילדים",
+        "גן ילדים",
+        "הריון",
+        "לידה",
+        "ציוד לתינוק"
+      ],
+      "israeli": true,
+      "israeliScore": 9,
+      "israeliSignals": [
+        "עברית דומיננטית",
+        "מקום: חיפה",
+        "מקור ישראלי"
+      ],
+      "source": "demo",
+      "sourceUrl": "https://example.com/demo",
+      "firstSeen": "2026-08-18T09:00:00.000Z",
+      "lastSeen": "2026-08-18T09:00:00.000Z"
+    },
+    {
+      "id": "DEMO19XXXXXXXXXXXXXX",
+      "url": "https://chat.whatsapp.com/DEMO19XXXXXXXXXXXXXX",
+      "title": "דף יומי ושיעורי תורה",
+      "description": "שיעורי תורה יומיים, פרשת שבוע והלכה.",
+      "category": "religion",
+      "categoryScore": 46.43,
+      "tags": [
+        "תורה",
+        "דף יומי",
+        "שיעורי תורה",
+        "פרשת שבוע"
+      ],
+      "israeli": true,
+      "israeliScore": 6,
+      "israeliSignals": [
+        "עברית דומיננטית",
+        "מקור ישראלי"
+      ],
+      "source": "demo",
+      "sourceUrl": "https://example.com/demo",
+      "firstSeen": "2026-08-18T09:00:00.000Z",
+      "lastSeen": "2026-08-18T09:00:00.000Z"
+    },
+    {
+      "id": "DEMO20XXXXXXXXXXXXXX",
+      "url": "https://chat.whatsapp.com/DEMO20XXXXXXXXXXXXXX",
+      "title": "בעלי עסקים ונטוורקינג",
+      "description": "יזמות, שיווק דיגיטלי ונטוורקינג לעצמאים ובעלי עסקים בישראל.",
+      "category": "business",
+      "categoryScore": 44.43,
+      "tags": [
+        "עסקים",
+        "יזמות",
+        "שיווק",
+        "שיווק דיגיטלי",
+        "בעלי עסקים"
+      ],
+      "israeli": true,
+      "israeliScore": 11,
+      "israeliSignals": [
+        "עברית דומיננטית",
+        "מקום: ישראל",
+        "מונח מקומי: ישראל",
+        "מקור ישראלי"
+      ],
+      "source": "demo",
+      "sourceUrl": "https://example.com/demo",
+      "firstSeen": "2026-08-18T09:00:00.000Z",
+      "lastSeen": "2026-08-18T09:00:00.000Z"
+    },
+    {
+      "id": "DEMO21XXXXXXXXXXXXXX",
+      "url": "https://chat.whatsapp.com/DEMO21XXXXXXXXXXXXXX",
+      "title": "קריפטו ומניות — קהילה ישראלית",
+      "description": "ביטקוין, מטבעות דיגיטליים, בורסה, מניות והשקעות.",
+      "category": "finance",
+      "categoryScore": 36,
+      "tags": [
+        "קריפטו",
+        "ביטקוין",
+        "מטבעות דיגיטליים",
+        "בורסה",
+        "מניות",
+        "קהילה"
+      ],
+      "israeli": true,
+      "israeliScore": 11,
+      "israeliSignals": [
+        "עברית דומיננטית",
+        "מקום: ישראל",
+        "מונח מקומי: ישראל",
+        "מקור ישראלי"
+      ],
+      "source": "demo",
+      "sourceUrl": "https://example.com/demo",
+      "firstSeen": "2026-08-18T09:00:00.000Z",
+      "lastSeen": "2026-08-18T09:00:00.000Z"
+    },
+    {
+      "id": "DEMO22XXXXXXXXXXXXXX",
+      "url": "https://chat.whatsapp.com/DEMO22XXXXXXXXXXXXXX",
+      "title": "אימוץ כלבים וחתולים",
+      "description": "אימוץ כלבים וחתולים, גורים ועזרה מווטרינר בכל הארץ.",
+      "category": "pets",
+      "categoryScore": 36.02,
+      "tags": [
+        "כלבים",
+        "אימוץ כלבים",
+        "גורים"
+      ],
+      "israeli": true,
+      "israeliScore": 9,
+      "israeliSignals": [
+        "עברית דומיננטית",
+        "מקום: הארץ",
+        "מקור ישראלי"
+      ],
+      "source": "demo",
+      "sourceUrl": "https://example.com/demo",
+      "firstSeen": "2026-08-18T09:00:00.000Z",
+      "lastSeen": "2026-08-18T09:00:00.000Z"
+    },
+    {
+      "id": "DEMO23XXXXXXXXXXXXXX",
+      "url": "https://chat.whatsapp.com/DEMO23XXXXXXXXXXXXXX",
+      "title": "טרמפים תל אביב — באר שבע",
+      "description": "נסיעות משותפות וטרמפים קבועים בין תל אביב לבאר שבע.",
+      "category": "cars",
+      "categoryScore": 17,
+      "tags": [
+        "טרמפים",
+        "נסיעות משותפות"
+      ],
+      "israeli": true,
+      "israeliScore": 9,
+      "israeliSignals": [
+        "עברית דומיננטית",
+        "מקום: תל אביב",
+        "מקור ישראלי"
+      ],
+      "source": "demo",
+      "sourceUrl": "https://example.com/demo",
+      "firstSeen": "2026-08-18T09:00:00.000Z",
+      "lastSeen": "2026-08-18T09:00:00.000Z"
+    },
+    {
+      "id": "DEMO24XXXXXXXXXXXXXX",
+      "url": "https://chat.whatsapp.com/DEMO24XXXXXXXXXXXXXX",
+      "title": "תושבי שכונת פלורנטין",
+      "description": "קהילת שכונת פלורנטין: המלצות על בעלי מקצוע, אירועים ושכנים.",
+      "category": "local",
+      "categoryScore": 37.51,
+      "tags": [
+        "תושבי",
+        "שכונת",
+        "קהילת",
+        "בעלי מקצוע"
+      ],
+      "israeli": true,
+      "israeliScore": 6,
+      "israeliSignals": [
+        "עברית דומיננטית",
+        "מקור ישראלי"
+      ],
+      "source": "demo",
+      "sourceUrl": "https://example.com/demo",
+      "firstSeen": "2026-08-18T09:00:00.000Z",
+      "lastSeen": "2026-08-18T09:00:00.000Z"
+    },
+    {
+      "id": "DEMO25XXXXXXXXXXXXXX",
+      "url": "https://chat.whatsapp.com/DEMO25XXXXXXXXXXXXXX",
+      "title": "רווקים ורווקות 30+",
+      "description": "היכרויות, חברים חדשים ומפגשים לפנויים ופנויות באזור המרכז.",
+      "category": "social",
+      "categoryScore": 30,
+      "tags": [
+        "היכרויות",
+        "חברים חדשים",
+        "רווקים",
+        "פנויים ופנויות"
+      ],
+      "israeli": true,
+      "israeliScore": 9,
+      "israeliSignals": [
+        "עברית דומיננטית",
+        "מקום: המרכז",
+        "מקור ישראלי"
+      ],
+      "source": "demo",
+      "sourceUrl": "https://example.com/demo",
+      "firstSeen": "2026-08-18T09:00:00.000Z",
+      "lastSeen": "2026-08-18T09:00:00.000Z"
+    },
+    {
+      "id": "DEMO26XXXXXXXXXXXXXX",
+      "url": "https://chat.whatsapp.com/DEMO26XXXXXXXXXXXXXX",
+      "title": "גיימרים ישראל",
+      "description": "גיימינג, פלייסטיישן, אקסבוקס ומשחקי מחשב. קהילת גיימרים בעברית.",
+      "category": "gaming",
+      "categoryScore": 39.51,
+      "tags": [
+        "קהילת",
+        "גיימינג",
+        "גיימרים",
+        "משחקי מחשב",
+        "פלייסטיישן",
+        "אקסבוקס"
+      ],
+      "israeli": true,
+      "israeliScore": 11,
+      "israeliSignals": [
+        "עברית דומיננטית",
+        "מקום: ישראל",
+        "מונח מקומי: ישראל",
+        "מקור ישראלי"
+      ],
+      "source": "demo",
+      "sourceUrl": "https://example.com/demo",
+      "firstSeen": "2026-08-18T09:00:00.000Z",
+      "lastSeen": "2026-08-18T09:00:00.000Z"
+    },
+    {
+      "id": "DEMO27XXXXXXXXXXXXXX",
+      "url": "https://chat.whatsapp.com/DEMO27XXXXXXXXXXXXXX",
+      "title": "צילום וציור — יוצרים",
+      "description": "אומנות, צילום, ציור ועיצוב. משתפים יצירות ומקבלים פידבק.",
+      "category": "art",
+      "categoryScore": 22.92,
+      "tags": [
+        "אומנות",
+        "ציור",
+        "צילום"
+      ],
+      "israeli": true,
+      "israeliScore": 6,
+      "israeliSignals": [
+        "עברית דומיננטית",
+        "מקור ישראלי"
+      ],
+      "source": "demo",
+      "sourceUrl": "https://example.com/demo",
+      "firstSeen": "2026-08-18T09:00:00.000Z",
+      "lastSeen": "2026-08-18T09:00:00.000Z"
+    }
+  ]
+}
