@@ -101,13 +101,35 @@ def find_inputs():
     auds = [p for p in files if p.lower().endswith(AUDIO_EXT) and MAIN_NAME.search(os.path.basename(p))]
     suno = [p for p in files if p.lower().endswith(AUDIO_EXT) and SUNO_NAME.search(os.path.basename(p))]
     if not vids:
-        raise SystemExit("Video not found (name with 'סוכות' / 'Abba_sukkot'). Pass the path: python daf.py VIDEO PLAYBACK")
-    newest = lambda ps: sorted(ps, key=lambda p: (os.path.getsize(p) > 2e6, os.path.getmtime(p)), reverse=True)
-    video = newest(vids)[0]
+        raise SystemExit("Video not found (name with 'סוכות' / 'Abba_sukkot'). Pass the path: bash daf_katan/make.sh VIDEO PLAYBACK")
+    ranked = sorted(vids, key=video_rank, reverse=True)
+    log("video candidates (best first):")
+    for p in ranked[:6]:
+        log(f"   {os.path.getsize(p) / 1e6:7.1f}MB  {p}")
+    video = ranked[0]
+    newest = lambda ps: sorted(ps, key=lambda p: (not DERIVED.search(os.path.basename(p)), os.path.getsize(p) > 2e6,
+                                                  os.path.getmtime(p)), reverse=True)
     cands = newest(auds) + [p for p in newest(suno) if p not in auds]
     if not cands:
-        raise SystemExit("Playback mp3 not found. Pass the path: python daf.py VIDEO PLAYBACK")
+        raise SystemExit("Playback mp3 not found. Pass the path: bash daf_katan/make.sh VIDEO PLAYBACK")
     return video, cands
+
+
+# outputs of earlier attempts - never the original recording
+DERIVED = re.compile(r"synced|instrumental|mix|final|output|render|edit|preview|proxy|copy|דף|daf|_out", re.I)
+ORIGINAL_SIZE = 72364957  # "דף קטן סיום אבא מקור.mp4" as uploaded to Drive
+
+
+def video_rank(p):
+    name = os.path.basename(p)
+    stem = re.sub(r"[\s_\-.]|\(\d+\)|-\d+$", "", os.path.splitext(name)[0]).lower()
+    size = os.path.getsize(p)
+    return (size == ORIGINAL_SIZE,
+            not DERIVED.search(name),
+            stem in ("abbasukkot", "אבאסוכות", "אבאסוכותמקור"),
+            "/DCIM/" in p,
+            size,
+            os.path.getmtime(p))
 
 
 def probe(path):
