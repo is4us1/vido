@@ -506,14 +506,15 @@ def refine_shift(pa, shift, p_lo, p_hi, reach=0.4):
     if shift == 0:
         return 0.0
     n = pa.n
-    a = int(max(p_lo, 0, -shift) * FPS)
-    b = int(min(p_hi, n / FPS, n / FPS - shift) * FPS)
+    R = int(reach * FPS)
+    base = int(round(shift * FPS))
+    # both the region and every shifted copy of it must lie inside the playback
+    a = max(int(p_lo * FPS), 0, -(base - R))
+    b = min(int(p_hi * FPS), n, n - (base + R))
     if b - a < 4 * FPS:
         return shift
     fl = pa.flux
     H = normalise(harmony(pa))
-    R = int(reach * FPS)
-    base = int(round(shift * FPS))
     scores = []
     for L in range(base - R, base + R + 1):
         x, y = fl[a:b], fl[a + L:b + L]
@@ -1078,7 +1079,11 @@ def main():
     plan, info = plan_structure(va, pa, g, m0, pdur)
     sections = []
     for a, b, shift in plan:
-        knots, exact = section_knots(pa, knots0, m0, shift, max(a, 0.0), min(b, vdur))
+        try:
+            knots, exact = section_knots(pa, knots0, m0, shift, max(a, 0.0), min(b, vdur))
+        except Exception as e:  # never lose the film over a refinement
+            log(f"      note: section refinement skipped ({e})")
+            knots = [(t, m + shift) for t, m in knots0]
         sections.append((a, b, knots))
     m_first, m_last = mapping_fn(sections[0][2]), mapping_fn(sections[-1][2])
     # open on the playback's own beginning and close on its own ending
